@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html { @apply scroll-smooth; }
+    body { @apply bg-slate-50 text-slate-800; }
+    [x-cloak] { display: none !important; }
+    :focus-visible { @apply outline-none ring-2 ring-emerald-500 ring-offset-2; }
+}
+
+@layer components {
+    .healo-card { @apply rounded-3xl border border-slate-200/80 bg-white shadow-sm; }
+    .healo-button-primary { @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-600/20 transition hover:bg-emerald-700 focus-visible:ring-emerald-500; }
+    .healo-button-secondary { @apply inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-800; }
+    .healo-kicker { @apply text-xs font-bold uppercase tracking-[0.18em] text-emerald-700; }
+}

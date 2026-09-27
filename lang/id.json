@@ -1,0 +1,20 @@
+{
+    "Name": "Nama",
+    "Email": "Email",
+    "Password": "Kata sandi",
+    "Confirm Password": "Konfirmasi kata sandi",
+    "Remember me": "Ingat saya",
+    "Forgot your password?": "Lupa kata sandi?",
+    "Log in": "Masuk",
+    "Register": "Daftar",
+    "Already registered?": "Sudah punya akun?",
+    "Profile": "Profil",
+    "Profile Information": "Informasi Profil",
+    "Update your account's profile information and email address.": "Perbarui nama dan alamat email akun Anda.",
+    "Save": "Simpan",
+    "Saved.": "Tersimpan.",
+    "Update Password": "Ubah Kata Sandi",
+    "Delete Account": "Hapus Akun",
+    "Log Out": "Keluar",
+    "Language": "Bahasa"
+}
