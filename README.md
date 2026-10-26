@@ -162,6 +162,7 @@ Conversation content and stored assessments remain encrypted at rest. Configure 
 - [Architecture plan](docs/architecture.md)
 - [Database ERD and migration inventory](docs/database-erd.md)
 - [Routes, pages, components and implementation roadmap](docs/implementation-roadmap.md)
+- [Product backlog, use cases, activity diagrams, use case diagrams, and class diagrams](docs/system-analysis/README.md)
 
 ## Safety boundary
 
