@@ -1,5 +1,9 @@
 # Use Case Diagram
 
+Versi poster visual bergaya UML tersedia dalam format [PNG](use-case-diagram-poster.png) dan [HTML yang dapat diedit](use-case-diagram-poster.html).
+
+![Poster Use Case Diagram HEALO](use-case-diagram-poster.png)
+
 Seluruh diagram memakai tepat dua aktor bisnis: `User` dan `Admin`. Aktivitas sebelum autentikasi tetap menjadi tanggung jawab User. AI provider, API client, scheduler, queue worker, Reverb, dan komponen internal lain bukan aktor.
 
 Mermaid belum memiliki notasi native UML use case. Karena itu, aktor digambar sebagai node persegi dan use case sebagai node oval/stadium; relasi `include` dan `extend` diberi label eksplisit.

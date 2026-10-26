@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Use Case Diagram — HEALO</title>
+  <style>
+    :root {
+      --navy:#0a3863; --blue:#1685e5; --teal:#109b91; --green:#3aaa68;
+      --orange:#e59a21; --pink:#ea4389; --purple:#8051d3; --ink:#123957;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;background:#edf5f7;font-family:"Segoe UI",Arial,sans-serif;color:var(--navy)}
+    body{width:2400px;height:1500px;padding:24px}
+    .poster{position:relative;width:2352px;height:1452px;background:radial-gradient(circle at 80% 10%,rgba(92,201,151,.08),transparent 22%),linear-gradient(135deg,#fff,#f8fcfc);border:1px solid #cfe0e4;box-shadow:0 10px 40px rgba(10,56,99,.1);overflow:hidden}
+    header{height:110px;padding:20px 30px 10px}
+    h1{font-size:43px;line-height:1;margin:0;letter-spacing:-1px}
+    header p{font-size:22px;margin:9px 0 0;color:#245378}
+    .system{position:absolute;left:155px;right:155px;top:112px;height:1190px;border:3px solid var(--blue);border-radius:17px;background:rgba(255,255,255,.7);padding:73px 22px 22px}
+    .system-brand{position:absolute;top:12px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;font-size:39px;font-weight:900;letter-spacing:-1px}
+    .logo{width:54px;height:54px}
+    .modules{height:100%;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:1fr 1fr;gap:17px}
+    .module{position:relative;border:2px solid;border-radius:13px;padding:52px 13px 14px;background:rgba(255,255,255,.72);overflow:hidden}
+    .module h2{position:absolute;top:12px;left:20px;margin:0;font-size:22px;line-height:1.15}
+    .module.blue{border-color:#36a1ec;background:linear-gradient(135deg,rgba(231,246,255,.9),rgba(255,255,255,.86))}.module.blue h2{color:#0b5ea5}
+    .module.green{border-color:#4cc574;background:linear-gradient(135deg,rgba(234,252,239,.94),rgba(255,255,255,.86))}.module.green h2{color:#176d35}
+    .module.orange{border-color:#efb32b;background:linear-gradient(135deg,rgba(255,248,222,.95),rgba(255,255,255,.86))}.module.orange h2{color:#995713}
+    .module.pink{border-color:#ee5b9a;background:linear-gradient(135deg,rgba(255,234,245,.94),rgba(255,255,255,.86))}.module.pink h2{color:#8f1c56}
+    .module.teal{border-color:#38bba7;background:linear-gradient(135deg,rgba(231,251,247,.94),rgba(255,255,255,.86))}.module.teal h2{color:#146f69}
+    .module.purple{border-color:#9567e5;background:linear-gradient(135deg,rgba(244,235,255,.95),rgba(255,255,255,.86))}.module.purple h2{color:#58269f}
+    .module.indigo{border-color:#6c84eb;background:linear-gradient(135deg,rgba(237,241,255,.96),rgba(255,255,255,.86))}.module.indigo h2{color:#273e9b}
+    .admin-module{grid-column:4;grid-row:1}
+    .usecases{height:100%;display:flex;flex-direction:column;justify-content:flex-start;gap:9px}
+    .uc{min-height:48px;border:1.8px solid currentColor;border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;padding:7px 14px;background:rgba(255,255,255,.78);font-size:13px;font-weight:650;line-height:1.18;color:inherit}
+    .blue .uc{color:#106ab0}.green .uc{color:#198246}.orange .uc{color:#aa6917}.pink .uc{color:#b62a6b}.teal .uc{color:#157e76}.purple .uc{color:#6632b2}.indigo .uc{color:#344cb0}
+    .relation{display:grid;grid-template-columns:1fr 72px .82fr;align-items:center;gap:5px}
+    .relation .uc{min-height:45px}
+    .rel{position:relative;height:1px;border-top:2px dashed currentColor;opacity:.9}
+    .rel::after{content:"▶";position:absolute;right:-5px;top:-9px;font-size:12px}
+    .rel::before{content:"«include»";position:absolute;left:50%;top:-16px;transform:translateX(-50%);font-size:9px;font-weight:800;white-space:nowrap;background:#fff;padding:0 2px}
+    .rel.extend::before{content:"«extend»"}
+    .target{font-size:11px!important;min-height:38px!important;padding:6px!important}
+    .privacy{border:1px dashed #8f69d5;border-radius:9px;padding:9px;background:rgba(255,255,255,.72);font-size:12px;line-height:1.35;text-align:center;color:#593198;font-weight:650}
+    .actor{position:absolute;top:610px;width:125px;text-align:center;color:var(--blue);font-weight:900;font-size:23px;z-index:3}
+    .actor.user{left:14px}.actor.admin{right:14px;color:var(--purple)}
+    .stick{position:relative;width:84px;height:128px;margin:0 auto 7px}
+    .stick .head{position:absolute;top:0;left:29px;width:27px;height:27px;border:4px solid currentColor;border-radius:50%;background:#fff}
+    .stick .body{position:absolute;top:27px;left:40px;width:4px;height:54px;background:currentColor}
+    .stick .arms{position:absolute;top:46px;left:13px;width:58px;height:4px;background:currentColor}
+    .stick .leg1,.stick .leg2{position:absolute;top:76px;left:39px;width:4px;height:57px;background:currentColor;transform-origin:top}
+    .stick .leg1{transform:rotate(29deg)}.stick .leg2{transform:rotate(-29deg)}
+    .connectors{position:absolute;inset:0;pointer-events:none;z-index:2}
+    .connectors path{fill:none;stroke:#0e5b9d;stroke-width:2.2;opacity:.9}
+    .connectors path.admin-line{stroke:#7040bd}
+    .legend{position:absolute;left:30px;right:30px;bottom:20px;height:104px;border:2px solid #77bdf0;border-radius:12px;background:rgba(255,255,255,.92);display:flex;align-items:center;gap:34px;padding:14px 24px}
+    .legend strong{font-size:17px}.legend-item{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:650}
+    .mini-actor{position:relative;width:27px;height:48px;color:#176eaa}.mini-actor:before{content:"";position:absolute;left:8px;top:0;width:11px;height:11px;border:2px solid currentColor;border-radius:50%}.mini-actor:after{content:"";position:absolute;left:13px;top:13px;width:2px;height:31px;background:currentColor;box-shadow:-8px 12px 0 -0.2px currentColor,8px 12px 0 -0.2px currentColor;transform:none}
+    .oval-sample{width:78px;height:38px;border:1.8px solid #1788df;border-radius:50%;background:#eaf6ff}
+    .boundary-sample{width:76px;height:45px;border:2px solid #1788df;border-radius:8px}
+    .dash-sample{position:relative;width:105px;border-top:2px dashed var(--navy)}.dash-sample:after{content:"▶";position:absolute;right:-5px;top:-9px;font-size:12px}.dash-sample:before{content:"«include»";position:absolute;left:28px;top:-18px;font-size:9px;background:#fff}
+    .legend-note{margin-left:auto;font-size:12px;color:#587282;text-align:right;line-height:1.35}
+  </style>
+</head>
+<body>
+<main class="poster">
+  <header><h1>Use Case Diagram — HEALO</h1><p>Health &amp; Wellness Application (Standalone)</p></header>
+
+  <div class="actor user"><div class="stick"><i class="head"></i><i class="body"></i><i class="arms"></i><i class="leg1"></i><i class="leg2"></i></div>User</div>
+  <div class="actor admin"><div class="stick"><i class="head"></i><i class="body"></i><i class="arms"></i><i class="leg1"></i><i class="leg2"></i></div>Admin</div>
+
+  <svg class="connectors" viewBox="0 0 2352 1452" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M92 690 C130 650,145 370,190 360"/><path d="M92 690 C135 690,150 430,190 430"/>
+    <path d="M92 690 C130 680,145 520,190 520"/><path d="M92 690 C135 710,145 760,190 760"/>
+    <path d="M92 690 C135 740,145 920,190 920"/><path d="M92 690 C135 770,145 1090,190 1090"/>
+    <path class="admin-line" d="M2260 690 C2220 650,2205 345,2160 345"/><path class="admin-line" d="M2260 690 C2220 680,2205 455,2160 455"/>
+    <path class="admin-line" d="M2260 690 C2220 700,2205 555,2160 555"/>
+  </svg>
+
+  <section class="system">
+    <div class="system-brand">
+      <svg class="logo" viewBox="0 0 40 40" fill="none"><path d="M20.5 34.5C19.8 23 24 12.4 34.4 6.2c.7 10.7-3.5 19.4-13.9 23.2" fill="#2DB67C"/><path d="M19.6 34.6C17.5 24.1 11.3 17 3.7 15.4c-.3 9.6 4.4 15.5 15.9 16.8" fill="#159A70"/><path d="M14.8 15.4C16.2 8.9 20.5 5.2 26.4 3.8c.1 5.2-2.1 9.1-6.5 11.8" fill="#57C991"/></svg>
+      HEALO
+    </div>
+    <div class="modules">
+      <article class="module blue"><h2>1. Autentikasi &amp; Akun</h2><div class="usecases">
+        <div class="uc">Registrasi akun</div>
+        <div class="relation"><div class="uc">Login</div><i class="rel"></i><div class="uc target">Validasi kredensial</div></div>
+        <div class="uc">Verifikasi email</div><div class="uc">Reset password</div><div class="uc">Kelola profil akun</div><div class="uc">Logout</div>
+      </div></article>
+
+      <article class="module green"><h2>2. Profil &amp; Jurnal</h2><div class="usecases">
+        <div class="relation"><div class="uc">Kelola profil kesehatan</div><i class="rel"></i><div class="uc target">Validasi &amp; enkripsi</div></div>
+        <div class="relation"><div class="uc">Kelola jurnal kesehatan</div><i class="rel"></i><div class="uc target">Simpan owner-scoped</div></div>
+        <div class="uc">Kelola entry jurnal</div><div class="uc">Cari &amp; filter jurnal</div><div class="uc">Melihat tren jurnal</div>
+      </div></article>
+
+      <article class="module orange"><h2>3. BMI &amp; Nutrisi</h2><div class="usecases">
+        <div class="relation"><div class="uc">Mencatat BMI</div><i class="rel"></i><div class="uc target">Hitung BMI &amp; kategori</div></div>
+        <div class="uc">Melihat / menghapus riwayat BMI</div>
+        <div class="relation"><div class="uc">Kelola profil nutrisi</div><i class="rel"></i><div class="uc target">Hitung target kalori</div></div>
+        <div class="uc">Melihat ringkasan nutrisi</div><div class="uc">Kelola meal &amp; item makanan</div>
+      </div></article>
+
+      <article class="module purple admin-module"><h2>8. Administrasi Sistem</h2><div class="usecases">
+        <div class="uc">Login admin</div><div class="uc">Logout admin</div>
+        <div class="relation"><div class="uc">Melihat dashboard admin</div><i class="rel"></i><div class="uc target">Validasi role admin</div></div>
+        <div class="uc">Melihat total user</div><div class="uc">Melihat user baru 30 hari</div><div class="uc">Melihat jumlah audit event 24 jam</div>
+        <div class="privacy">Dashboard hanya menampilkan data agregat.<br>Admin tidak memiliki bypass ke data kesehatan privat.</div>
+      </div></article>
+
+      <article class="module pink"><h2>4. Menu Sehat &amp; Food Analysis</h2><div class="usecases">
+        <div class="relation"><div class="uc">Mencari menu sehat</div><i class="rel"></i><div class="uc target">Filter diet &amp; meal type</div></div>
+        <div class="uc">Melihat detail &amp; sumber menu</div>
+        <div class="relation"><div class="uc">Upload foto makanan</div><i class="rel"></i><div class="uc target">Analisis privat</div></div>
+        <div class="relation"><div class="uc">Review &amp; konfirmasi hasil</div><i class="rel"></i><div class="uc target">Buat meal</div></div>
+      </div></article>
+
+      <article class="module blue"><h2>5. AI &amp; Health Insights</h2><div class="usecases">
+        <div class="uc">Kelola percakapan kesehatan</div>
+        <div class="relation"><div class="uc">Menggunakan health assistant</div><i class="rel"></i><div class="uc target">Medical safety guard</div></div>
+        <div class="relation"><div class="uc">Pemeriksaan gejala</div><i class="rel"></i><div class="uc target">Emergency detection</div></div>
+        <div class="relation"><div class="uc">Riwayat assessment</div><i class="rel extend"></i><div class="uc target">Simpan ke jurnal</div></div>
+        <div class="relation"><div class="uc">Melihat health insights</div><i class="rel"></i><div class="uc target">Tren &amp; weekly summary</div></div>
+      </div></article>
+
+      <article class="module teal"><h2>6. Goals &amp; Health Plan</h2><div class="usecases">
+        <div class="relation"><div class="uc">Kelola health goal</div><i class="rel"></i><div class="uc target">Validasi &amp; hitung progres</div></div>
+        <div class="uc">Melihat progres goal</div>
+        <div class="relation"><div class="uc">Generate health plan</div><i class="rel"></i><div class="uc target">Generate task deterministik</div></div>
+        <div class="relation"><div class="uc">Complete / reopen task</div><i class="rel"></i><div class="uc target">Hitung ulang progres</div></div>
+        <div class="uc">Melihat progres plan harian</div>
+      </div></article>
+
+      <article class="module indigo"><h2>7. Notifikasi &amp; Pengaturan</h2><div class="usecases">
+        <div class="relation"><div class="uc">Pusat notifikasi</div><i class="rel"></i><div class="uc target">Filter, read, read-all</div></div>
+        <div class="relation"><div class="uc">Preferensi notifikasi</div><i class="rel"></i><div class="uc target">Kategori &amp; quiet hours</div></div>
+        <div class="uc">Menerima reminder terjadwal</div><div class="uc">Menerima notifikasi real-time</div><div class="uc">Melihat dashboard kesehatan</div>
+      </div></article>
+    </div>
+  </section>
+
+  <footer class="legend"><strong>Keterangan:</strong><div class="legend-item"><i class="mini-actor"></i> Actor</div><div class="legend-item"><i class="oval-sample"></i> Use Case</div><div class="legend-item"><i class="dash-sample"></i> Include / Extend</div><div class="legend-item"><i class="boundary-sample"></i> System Boundary</div><div class="legend-note">Aktor: User dan Admin<br>Isi diagram mengikuti fitur HEALO yang terimplementasi</div></footer>
+</main>
+</body>
+</html>
