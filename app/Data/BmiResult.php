@@ -11,4 +11,3 @@ readonly class BmiResult
         public BmiCategory $category,
     ) {}
 }
-

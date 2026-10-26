@@ -22,12 +22,12 @@ class BmiRecordService
             'measured_at' => $data['measured_at'] ?? now(),
         ]);
 
-        if (($data['update_health_profile'] ?? false) === true) {
-            $profile = $user->healthProfile()->firstOrCreate();
-            $profile->update(Arr::only($data, ['height_cm', 'weight_kg']));
+        if ((bool) ($data['update_health_profile'] ?? false)) {
+            $user->healthProfile()->first()?->update(
+                Arr::only($data, ['height_cm', 'weight_kg'])
+            );
         }
 
         return $record;
     }
 }
-

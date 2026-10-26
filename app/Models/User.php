@@ -6,11 +6,12 @@ use App\Enums\UserRole;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -77,5 +78,65 @@ class User extends Authenticatable implements MustVerifyEmail
     public function healthJournals(): HasMany
     {
         return $this->hasMany(HealthJournal::class);
+    }
+
+    public function healthJournalEntries(): HasManyThrough
+    {
+        return $this->hasManyThrough(HealthJournalEntry::class, HealthJournal::class);
+    }
+
+    public function nutritionProfile(): HasOne
+    {
+        return $this->hasOne(NutritionProfile::class);
+    }
+
+    public function meals(): HasMany
+    {
+        return $this->hasMany(Meal::class);
+    }
+
+    public function mealItems(): HasManyThrough
+    {
+        return $this->hasManyThrough(MealItem::class, Meal::class);
+    }
+
+    public function nutritionDailySummaries(): HasMany
+    {
+        return $this->hasMany(NutritionDailySummary::class);
+    }
+
+    public function foodAnalyses(): HasMany
+    {
+        return $this->hasMany(FoodAnalysis::class);
+    }
+
+    public function healthConversations(): HasMany
+    {
+        return $this->hasMany(HealthConversation::class);
+    }
+
+    public function symptomAssessments(): HasMany
+    {
+        return $this->hasMany(SymptomAssessment::class);
+    }
+
+    public function healthGoals(): HasMany
+    {
+        return $this->hasMany(HealthGoal::class);
+    }
+
+    public function healthPlans(): HasMany
+    {
+        return $this->hasMany(HealthPlan::class);
+    }
+
+    public function userNotifications(): HasMany
+    {
+        return $this->hasMany(UserNotification::class);
+    }
+
+    public function notificationPreference(): HasOne
+    {
+        return $this->hasOne(NotificationPreference::class);
     }
 }

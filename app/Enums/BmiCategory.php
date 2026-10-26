@@ -9,4 +9,3 @@ enum BmiCategory: string
     case Overweight = 'overweight';
     case Obesity = 'obesity';
 }
-

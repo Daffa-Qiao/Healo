@@ -9,4 +9,3 @@ enum Gender: string
     case Other = 'other';
     case PreferNotToSay = 'prefer_not_to_say';
 }
-

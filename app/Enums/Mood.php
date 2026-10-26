@@ -10,4 +10,3 @@ enum Mood: string
     case Low = 'low';
     case VeryLow = 'very_low';
 }
-

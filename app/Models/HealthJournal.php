@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\JournalEntryType;
 use App\Enums\Mood;
 use Database\Factories\HealthJournalFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,13 +16,29 @@ class HealthJournal extends Model
     /** @use HasFactory<HealthJournalFactory> */
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['title', 'journal_date', 'mood'];
+    protected $fillable = [
+        'title',
+        'journal_date',
+        'mood',
+        'weight_kg',
+        'systolic',
+        'diastolic',
+        'sleep_hours',
+        'water_liters',
+        'exercise_minutes',
+    ];
 
     protected function casts(): array
     {
         return [
             'journal_date' => 'date',
             'mood' => Mood::class,
+            'weight_kg' => 'decimal:2',
+            'systolic' => 'integer',
+            'diastolic' => 'integer',
+            'sleep_hours' => 'decimal:2',
+            'water_liters' => 'decimal:2',
+            'exercise_minutes' => 'integer',
         ];
     }
 
@@ -46,10 +63,9 @@ class HealthJournal extends Model
     public function symptomList(): array
     {
         return $this->entries
-            ->filter(fn (HealthJournalEntry $entry): bool => $entry->type === \App\Enums\JournalEntryType::Symptom)
+            ->filter(fn (HealthJournalEntry $entry): bool => $entry->type === JournalEntryType::Symptom)
             ->pluck('content')
             ->values()
             ->all();
     }
 }
-

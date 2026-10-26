@@ -25,6 +25,10 @@ class HealthProfileRequest extends FormRequest
 
     public function rules(): array
     {
+        $consentRules = $this->user()->healthProfile()->exists()
+            ? ['sometimes', 'accepted']
+            : ['required', 'accepted'];
+
         return [
             'height_cm' => ['nullable', 'numeric', 'between:80,250'],
             'weight_kg' => ['nullable', 'numeric', 'between:20,400'],
@@ -36,7 +40,7 @@ class HealthProfileRequest extends FormRequest
             'health_conditions.*' => ['string', 'max:120', 'distinct:ignore_case'],
             'allergies' => ['array', 'max:20'],
             'allergies.*' => ['string', 'max:120', 'distinct:ignore_case'],
-            'consent' => [Rule::requiredIf(fn (): bool => ! $this->user()->healthProfile()->exists()), 'accepted'],
+            'consent' => $consentRules,
         ];
     }
 
@@ -54,4 +58,3 @@ class HealthProfileRequest extends FormRequest
             ->all();
     }
 }
-

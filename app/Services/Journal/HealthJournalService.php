@@ -10,11 +10,24 @@ use Illuminate\Support\Facades\DB;
 
 class HealthJournalService
 {
+    /** @var list<string> */
+    private const JOURNAL_FIELDS = [
+        'title',
+        'journal_date',
+        'mood',
+        'weight_kg',
+        'systolic',
+        'diastolic',
+        'sleep_hours',
+        'water_liters',
+        'exercise_minutes',
+    ];
+
     /** @param array<string, mixed> $data */
     public function create(User $user, array $data): HealthJournal
     {
         return DB::transaction(function () use ($user, $data): HealthJournal {
-            $journal = $user->healthJournals()->create(Arr::only($data, ['title', 'journal_date', 'mood']));
+            $journal = $user->healthJournals()->create(Arr::only($data, self::JOURNAL_FIELDS));
             $this->syncEntries($journal, $data);
 
             return $journal->load('entries');
@@ -25,7 +38,7 @@ class HealthJournalService
     public function update(HealthJournal $journal, array $data): HealthJournal
     {
         return DB::transaction(function () use ($journal, $data): HealthJournal {
-            $journal->update(Arr::only($data, ['title', 'journal_date', 'mood']));
+            $journal->update(Arr::only($data, self::JOURNAL_FIELDS));
             $journal->entries()->delete();
             $this->syncEntries($journal, $data);
 
@@ -54,4 +67,3 @@ class HealthJournalService
         $journal->entries()->createMany($entries);
     }
 }
-

@@ -1,64 +1,90 @@
+@php
+    $firstName = str(Auth::user()->name)->before(' ');
+    $greetingKey = now()->hour < 11 ? 'dashboard.morning' : (now()->hour < 17 ? 'dashboard.afternoon' : 'dashboard.evening');
+    $providerLabel = $insight->provider === 'groq' ? 'Groq AI' : __('dashboard.local_provider');
+@endphp
+
 <x-app-layout>
     <x-slot name="title">{{ __('healo.dashboard') }}</x-slot>
     <x-slot name="header">
-        <p class="text-xs font-medium text-slate-500">{{ now()->translatedFormat('l, d F Y') }}</p>
-        <h1 class="truncate text-lg font-bold text-slate-900">{{ __('healo.hello_name', ['name' => str(Auth::user()->name)->before(' ')]) }}</h1>
+        <h1 class="truncate text-base font-bold text-[#17345C] sm:text-lg">{{ __($greetingKey, ['name' => $firstName]) }}</h1>
+        <p class="hidden text-xs text-slate-500 sm:block">{{ __('dashboard.greeting_subtitle') }}</p>
     </x-slot>
 
-    <div class="mx-auto max-w-7xl space-y-6">
-        <section class="relative overflow-hidden rounded-[2rem] bg-slate-950 p-6 text-white shadow-soft sm:p-8">
-            <div class="absolute -right-20 -top-24 size-64 rounded-full bg-emerald-400/20 blur-3xl"></div>
-            <div class="absolute bottom-0 right-1/3 size-40 rounded-full bg-sky-400/10 blur-3xl"></div>
-            <div class="relative grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
-                <div class="max-w-2xl">
-                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-emerald-300">{{ __('healo.today_health') }}</p>
-                    <h2 class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl">{{ __('healo.dashboard_empty_title') }}</h2>
-                    <p class="mt-3 max-w-xl text-sm leading-6 text-slate-300">{{ __('healo.dashboard_empty_body') }}</p>
-                </div>
-                <div class="flex flex-col gap-3 sm:flex-row lg:flex-col">
-                    <a href="{{ route('features.show', 'food-scanner') }}" class="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-400 px-5 py-3.5 text-sm font-bold text-emerald-950 transition hover:bg-emerald-300"><i data-lucide="scan-line" class="size-5"></i>{{ __('healo.scan_food') }}</a>
-                    <a href="{{ route('features.show', 'symptom-checker') }}" class="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-5 py-3.5 text-sm font-semibold text-white hover:bg-white/15"><i data-lucide="stethoscope" class="size-5"></i>{{ __('healo.check_symptoms') }}</a>
-                </div>
-            </div>
-        </section>
+    <div class="mx-auto max-w-[1400px]">
+        <div class="grid gap-5 xl:grid-cols-3">
+            <section class="relative overflow-hidden rounded-2xl border border-emerald-100 bg-[#EAF8F2] p-5 sm:p-6 xl:col-span-2 xl:row-start-1" aria-labelledby="health-banner-title">
+                <div class="relative z-10 flex max-w-xl items-start gap-4"><span class="grid size-12 shrink-0 place-items-center rounded-full bg-[#159A70] text-white"><i data-lucide="heart-pulse" class="size-6"></i></span><div><h2 id="health-banner-title" class="font-bold text-[#17345C]">{{ __('dashboard.banner_title') }}</h2><p class="mt-1 text-sm leading-6 text-emerald-800">{{ __('dashboard.banner_body') }}</p></div></div>
+                <div class="pointer-events-none absolute -bottom-10 right-5 hidden h-32 w-44 sm:block" aria-hidden="true"><span class="absolute bottom-0 left-20 h-24 w-5 rounded-full bg-emerald-500/30"></span><span class="absolute bottom-10 left-7 h-14 w-24 -rotate-12 rounded-[100%_0_100%_0] bg-emerald-400/35"></span><span class="absolute bottom-16 right-0 h-16 w-28 rotate-12 rounded-[0_100%_0_100%] bg-emerald-500/30"></span><span class="absolute right-16 top-0 size-12 rounded-full bg-amber-300/60"></span></div>
+            </section>
 
-        <section aria-labelledby="summary-title">
-            <div class="mb-4 flex items-end justify-between">
-                <div><p class="healo-kicker">{{ __('healo.overview') }}</p><h2 id="summary-title" class="mt-1 text-xl font-bold text-slate-900">{{ __('healo.your_health_today') }}</h2></div>
-                <span class="rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">{{ __('healo.getting_started') }}</span>
-            </div>
-            <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                @foreach([
-                    ['icon' => 'gauge', 'label' => __('healo.bmi'), 'value' => '—', 'note' => __('healo.no_bmi'), 'feature' => 'bmi'],
-                    ['icon' => 'flame', 'label' => __('healo.calories'), 'value' => '0', 'note' => __('healo.kcal_today'), 'feature' => 'nutrition'],
-                    ['icon' => 'utensils', 'label' => __('healo.meals'), 'value' => '0', 'note' => __('healo.no_meals'), 'feature' => 'food-scanner'],
-                    ['icon' => 'notebook-pen', 'label' => __('healo.journal'), 'value' => '0', 'note' => __('healo.no_journal'), 'feature' => 'health-journal'],
-                ] as $metric)
-                    <a href="{{ route('features.show', $metric['feature']) }}" class="healo-card group p-5 transition hover:-translate-y-0.5 hover:shadow-soft">
-                        <div class="flex items-start justify-between"><span class="grid size-11 place-items-center rounded-2xl bg-emerald-50 text-emerald-700"><i data-lucide="{{ $metric['icon'] }}" class="size-5"></i></span><i data-lucide="arrow-up-right" class="size-4 text-slate-300 group-hover:text-emerald-600"></i></div>
-                        <p class="mt-5 text-sm font-medium text-slate-500">{{ $metric['label'] }}</p>
-                        <p class="mt-1 text-3xl font-black tracking-tight text-slate-900">{{ $metric['value'] }}</p>
-                        <p class="mt-2 text-xs text-slate-500">{{ $metric['note'] }}</p>
-                    </a>
-                @endforeach
-            </div>
-        </section>
+            <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:col-span-2 xl:row-start-2" aria-label="{{ __('healo.your_health_today') }}">
+                <article class="healo-card p-5"><div class="flex items-center gap-3"><span class="grid size-10 place-items-center rounded-full bg-emerald-50 text-[#159A70]"><i data-lucide="gauge" class="size-5"></i></span><h2 class="text-sm font-semibold text-[#17345C]">{{ __('healo.bmi') }}</h2></div>@if($latest_bmi)<p class="mt-4 text-3xl font-bold tracking-tight text-[#17345C]">{{ number_format((float) $latest_bmi->bmi, 1) }}</p><p class="mt-1 text-sm font-semibold text-[#159A70]">{{ __('healo.bmi_category_'.$latest_bmi->category->value) }}</p><p class="mt-2 text-xs text-slate-500">@if($bmi_week_change !== null)<span @class(['font-bold', 'text-emerald-600' => $bmi_week_change <= 0, 'text-amber-600' => $bmi_week_change > 0])>{{ $bmi_week_change > 0 ? '↑' : '↓' }} {{ number_format(abs($bmi_week_change), 1) }}</span> {{ __('dashboard.from_last_week') }}@else{{ __('dashboard.no_comparison') }}@endif</p>@else<p class="mt-4 text-lg font-bold text-slate-700">{{ __('dashboard.no_bmi') }}</p><a href="{{ route('health-profile.edit') }}" class="mt-2 inline-flex items-center gap-1 text-xs font-bold text-emerald-700">{{ __('dashboard.complete_profile') }}<i data-lucide="arrow-right" class="size-3"></i></a>@endif</article>
 
-        <section class="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
-            <div class="healo-card p-6">
-                <div class="flex items-center justify-between"><div><p class="healo-kicker">{{ __('healo.quick_actions') }}</p><h2 class="mt-1 text-xl font-bold text-slate-900">{{ __('healo.start_small') }}</h2></div><span class="grid size-11 place-items-center rounded-2xl bg-emerald-50 text-emerald-700"><i data-lucide="sparkles" class="size-5"></i></span></div>
-                <div class="mt-5 grid gap-3 sm:grid-cols-2">
-                    <a href="{{ route('features.show', 'health-journal') }}" class="rounded-2xl border border-slate-200 p-4 hover:border-emerald-200 hover:bg-emerald-50/50"><i data-lucide="plus-circle" class="size-5 text-emerald-600"></i><p class="mt-3 font-semibold text-slate-900">{{ __('healo.add_journal') }}</p><p class="mt-1 text-sm text-slate-500">{{ __('healo.add_journal_hint') }}</p></a>
-                    <a href="{{ route('features.show', 'bmi') }}" class="rounded-2xl border border-slate-200 p-4 hover:border-sky-200 hover:bg-sky-50/50"><i data-lucide="calculator" class="size-5 text-sky-600"></i><p class="mt-3 font-semibold text-slate-900">{{ __('healo.calculate_bmi') }}</p><p class="mt-1 text-sm text-slate-500">{{ __('healo.calculate_bmi_hint') }}</p></a>
-                </div>
-            </div>
+                <article class="healo-card p-5"><div class="flex items-center gap-3"><span class="grid size-10 place-items-center rounded-full bg-amber-50 text-amber-600"><i data-lucide="flame" class="size-5"></i></span><h2 class="text-sm font-semibold text-[#17345C]">{{ __('dashboard.calories_today') }}</h2></div><p class="mt-4 text-2xl font-bold tracking-tight text-[#17345C]">{{ number_format((float) $today_nutrition->calories_consumed) }} <span class="text-sm font-medium text-slate-500">/ {{ $today_nutrition->calorie_target > 0 ? number_format($today_nutrition->calorie_target).' kcal' : '—' }}</span></p>@if($calorie_percentage !== null)<div class="mt-4 h-2 overflow-hidden rounded-full bg-slate-100"><div class="h-full rounded-full bg-[#159A70]" style="width: {{ $calorie_percentage }}%"></div></div><p class="mt-2 text-xs text-slate-500">{{ __('dashboard.from_target', ['percentage' => $calorie_percentage]) }}</p>@else<a href="{{ route('nutrition.profile.edit') }}" class="mt-3 inline-flex items-center gap-1 text-xs font-bold text-emerald-700">{{ __('nutrition.profile') }}<i data-lucide="arrow-right" class="size-3"></i></a>@endif</article>
 
-            <div class="healo-card p-6">
-                <div class="flex items-center gap-3"><span class="grid size-11 place-items-center rounded-2xl bg-sky-50 text-sky-700"><i data-lucide="shield-check" class="size-5"></i></span><div><p class="font-bold text-slate-900">{{ __('healo.privacy_first') }}</p><p class="text-xs text-slate-500">{{ __('healo.your_data_yours') }}</p></div></div>
-                <p class="mt-5 text-sm leading-6 text-slate-600">{{ __('healo.privacy_dashboard_copy') }}</p>
-                <a href="{{ route('profile.edit') }}" class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 hover:text-emerald-800">{{ __('healo.manage_account') }}<i data-lucide="arrow-right" class="size-4"></i></a>
-            </div>
-        </section>
+                <article class="healo-card p-5"><div class="flex items-center gap-3"><span class="grid size-10 place-items-center rounded-full bg-sky-50 text-sky-600"><i data-lucide="notebook-pen" class="size-5"></i></span><h2 class="text-sm font-semibold text-[#17345C]">{{ __('dashboard.journal_today') }}</h2></div>@if($journal_today)<p class="mt-4 text-3xl font-bold text-[#17345C]">1 <span class="text-sm font-medium text-slate-500">{{ __('dashboard.per_day') }}</span></p><p class="mt-2 flex items-center gap-2 text-xs font-semibold text-emerald-700">{{ __('dashboard.today') }}<i data-lucide="circle-check" class="size-4"></i></p>@else<p class="mt-4 text-sm font-semibold text-slate-700">{{ __('dashboard.no_journal_today') }}</p><a href="{{ route('health-journals.create') }}" class="mt-2 inline-flex items-center gap-1 text-xs font-bold text-emerald-700">{{ __('dashboard.write_first_journal') }}<i data-lucide="arrow-right" class="size-3"></i></a>@endif</article>
+
+                <article class="healo-card p-5"><div class="flex items-center gap-3"><span class="grid size-10 place-items-center rounded-full bg-emerald-50 text-[#159A70]"><i data-lucide="utensils" class="size-5"></i></span><h2 class="text-sm font-semibold text-[#17345C]">{{ __('dashboard.nutrition_today') }}</h2></div>@if($main_meals_logged > 0)<p class="mt-4 text-3xl font-bold text-[#17345C]">{{ $main_meals_logged }} <span class="text-sm font-medium text-slate-500">{{ __('dashboard.meal_target') }}</span></p><p class="mt-2 flex items-center gap-2 text-xs font-semibold text-emerald-700">{{ __('dashboard.today') }}@if($main_meals_logged >= 3)<i data-lucide="circle-check" class="size-4"></i>@endif</p>@else<p class="mt-4 text-sm font-semibold text-slate-700">{{ __('dashboard.no_meals_today') }}</p><a href="{{ route('meals.create') }}" class="mt-2 inline-flex items-center gap-1 text-xs font-bold text-emerald-700">{{ __('dashboard.add_meal') }}<i data-lucide="arrow-right" class="size-3"></i></a>@endif</article>
+            </section>
+
+            <aside class="healo-card p-5 sm:p-6 xl:col-start-3 xl:row-span-2 xl:row-start-1" aria-labelledby="active-goals-title"><div class="flex items-center justify-between gap-3"><h2 id="active-goals-title" class="font-bold text-[#17345C]">{{ __('dashboard.active_goals') }}</h2><a href="{{ route('health-goals.index') }}" class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700">{{ __('dashboard.view_all') }}<i data-lucide="arrow-right" class="size-3"></i></a></div><div class="mt-6 space-y-6">@forelse($goals as $goalData)@php $goal = $goalData['model']; $progress = $goalData['progress']; @endphp<div><div class="flex items-start gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-full bg-emerald-50 text-[#159A70]"><i data-lucide="{{ $goal->type->value === 'daily_calories' ? 'flame' : ($goal->type->value === 'weight' ? 'weight' : 'target') }}" class="size-5"></i></span><div class="min-w-0 flex-1"><p class="text-sm font-bold text-[#17345C]">{{ __('insights.type_'.$goal->type->value) }}</p><p class="mt-1 text-xs leading-5 text-slate-500">{{ $progress->currentValue !== null ? __('dashboard.goal_target_current', ['target' => number_format($progress->targetValue, 1), 'current' => number_format($progress->currentValue, 1), 'unit' => $progress->unit]) : __('dashboard.goal_no_current', ['target' => number_format($progress->targetValue, 1), 'unit' => $progress->unit]) }}</p><div class="mt-3 flex items-center gap-3"><div class="h-2 flex-1 overflow-hidden rounded-full bg-slate-100"><div class="h-full rounded-full bg-[#159A70]" style="width: {{ $progress->percentage }}%"></div></div><span class="text-xs font-bold text-[#17345C]">{{ number_format($progress->percentage) }}%</span></div></div></div></div>@empty<div class="rounded-xl border border-dashed border-slate-200 p-5 text-center"><p class="text-sm text-slate-500">{{ __('insights.no_goals') }}</p><a href="{{ route('health-goals.create') }}" class="mt-2 inline-flex items-center gap-1 text-sm font-bold text-emerald-700">{{ __('dashboard.create_goal') }}<i data-lucide="arrow-right" class="size-4"></i></a></div>@endforelse</div></aside>
+
+            <section class="grid gap-5 lg:grid-cols-[1.35fr_0.9fr] xl:col-span-2 xl:row-start-3">
+                <article x-data="{ period: 30 }" class="healo-card min-w-0 p-5 sm:p-6" aria-labelledby="health-progress-title"><div class="flex flex-wrap items-start justify-between gap-3"><div><h2 id="health-progress-title" class="font-bold text-[#17345C]">{{ __('dashboard.health_progress') }}</h2><p class="mt-1 text-xs text-slate-500" x-text="@js(__('dashboard.bmi_trend', ['days' => '__DAYS__'])).replace('__DAYS__', period)"></p></div><div class="flex rounded-xl border border-slate-200 bg-slate-50 p-1" role="group" aria-label="{{ __('dashboard.health_progress') }}">@foreach([7, 30, 90] as $days)<button @click="period={{ $days }}; window.dispatchEvent(new CustomEvent('dashboard-period', { detail: {{ $days }} }))" :class="period === {{ $days }} ? 'bg-[#159A70] text-white shadow-sm' : 'text-slate-500 hover:text-slate-800'" class="min-h-9 rounded-lg px-3 text-xs font-semibold">{{ __('dashboard.days', ['count' => $days]) }}</button>@endforeach</div></div><div class="mt-5 h-64"><canvas id="dashboard-bmi-chart" aria-label="{{ __('dashboard.bmi_trend', ['days' => 30]) }}">{{ __('dashboard.chart_empty') }}</canvas></div><p id="dashboard-chart-empty" class="hidden py-16 text-center text-sm text-slate-500">{{ __('dashboard.chart_empty') }}</p></article>
+
+                <article class="healo-card p-5 sm:p-6" aria-labelledby="today-plan-title"><div class="flex items-center justify-between gap-3"><h2 id="today-plan-title" class="font-bold text-[#17345C]">{{ __('dashboard.today_plan') }}</h2><a href="{{ route('health-plan.index') }}" class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700">{{ __('dashboard.view_all') }}<i data-lucide="arrow-right" class="size-3"></i></a></div>@if($plan)<div class="mt-4 flex items-center gap-3"><div class="h-2 flex-1 overflow-hidden rounded-full bg-slate-100"><div class="h-full rounded-full bg-[#159A70]" style="width: {{ $plan_metrics['percentage'] }}%"></div></div><span class="text-xs font-bold text-emerald-700">{{ $plan_metrics['percentage'] }}%</span></div><p class="mt-2 text-xs text-slate-500">{{ __('wellness.completed_count', ['completed' => $plan_metrics['completed'], 'total' => $plan_metrics['total']]) }}</p><ul class="mt-5 space-y-3">@foreach($plan->tasks->take(5) as $task)<li class="flex items-start gap-3"><span @class(['mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border', 'border-emerald-600 bg-emerald-600 text-white' => $task->status->value === 'completed', 'border-slate-300 text-transparent' => $task->status->value === 'pending'])><i data-lucide="check" class="size-3"></i></span><div><p @class(['text-sm font-medium', 'text-slate-400 line-through' => $task->status->value === 'completed', 'text-[#17345C]' => $task->status->value === 'pending'])>{{ __($task->title) }}</p>@if($task->description)<p class="mt-0.5 line-clamp-1 text-[11px] text-slate-400">{{ __($task->description) }}</p>@endif</div></li>@endforeach</ul>@else<div class="mt-5 rounded-xl border border-dashed border-slate-200 p-5 text-center"><p class="text-sm text-slate-500">{{ __('wellness.dashboard_empty') }}</p><a href="{{ route('health-plan.index') }}" class="mt-2 inline-flex items-center gap-1 text-sm font-bold text-emerald-700">{{ __('dashboard.generate_plan') }}<i data-lucide="arrow-right" class="size-4"></i></a></div>@endif</article>
+            </section>
+
+            <section class="healo-card p-5 sm:p-6 xl:col-span-2 xl:row-start-4" aria-labelledby="weekly-summary-title"><div class="flex items-center justify-between"><div><h2 id="weekly-summary-title" class="font-bold text-[#17345C]">{{ __('insights.weekly_summary') }}</h2><p class="mt-1 text-xs text-slate-500">{{ $weekly['start']->translatedFormat('d M') }} – {{ $weekly['end']->translatedFormat('d M Y') }}</p></div><a href="{{ route('health-insights.index') }}" class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700">{{ __('dashboard.view_all') }}<i data-lucide="arrow-right" class="size-3"></i></a></div><div class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                @php $calorieChange = $weekly['calorie_change_percentage']; $journalChange = $weekly['journal_day_change']; $weightChange = $weekly['weight_change']; @endphp
+                <div class="lg:border-r lg:border-slate-200 lg:pr-4"><div class="flex items-center gap-2"><span class="grid size-8 place-items-center rounded-full bg-amber-50 text-amber-600"><i data-lucide="flame" class="size-4"></i></span><p class="text-xs font-semibold text-slate-600">{{ __('dashboard.average_calories') }}</p></div><p class="mt-3 text-xl font-bold text-[#17345C]">{{ $weekly['average_calories'] > 0 ? number_format($weekly['average_calories']).' kcal' : '—' }}</p><p class="mt-1 text-xs text-slate-500">{{ $calorieChange !== null ? (($calorieChange >= 0 ? '↑ ' : '↓ ').number_format(abs($calorieChange)).'% '.__('dashboard.from_last_week')) : __('dashboard.no_comparison') }}</p></div>
+                <div class="lg:border-r lg:border-slate-200 lg:px-4"><div class="flex items-center gap-2"><span class="grid size-8 place-items-center rounded-full bg-sky-50 text-sky-600"><i data-lucide="notebook-pen" class="size-4"></i></span><p class="text-xs font-semibold text-slate-600">{{ __('dashboard.journal') }}</p></div><p class="mt-3 text-xl font-bold text-[#17345C]">{{ __('dashboard.days_of_seven', ['count' => $weekly['journal_days']]) }}</p><p class="mt-1 text-xs text-slate-500">{{ __('dashboard.days_change', ['count' => ($journalChange >= 0 ? '+' : '').$journalChange]) }}</p></div>
+                <div class="lg:border-r lg:border-slate-200 lg:px-4"><div class="flex items-center gap-2"><span class="grid size-8 place-items-center rounded-full bg-blue-50 text-blue-600"><i data-lucide="weight" class="size-4"></i></span><p class="text-xs font-semibold text-slate-600">{{ __('dashboard.weight') }}</p></div><p class="mt-3 text-xl font-bold text-[#17345C]">{{ $weekly['weight'] !== null ? number_format($weekly['weight'], 1).' kg' : '—' }}</p><p class="mt-1 text-xs text-slate-500">{{ $weightChange !== null ? (($weightChange > 0 ? '↑ ' : '↓ ').number_format(abs($weightChange), 1).' kg '.__('dashboard.from_last_week')) : __('dashboard.no_comparison') }}</p></div>
+                <div class="lg:pl-4"><div class="flex items-center gap-2"><span class="grid size-8 place-items-center rounded-full bg-violet-50 text-violet-600"><i data-lucide="smile" class="size-4"></i></span><p class="text-xs font-semibold text-slate-600">{{ __('dashboard.mood') }}</p></div><p class="mt-3 text-xl font-bold text-[#17345C]">{{ $weekly['mood'] ? __('healo.mood_'.$weekly['mood']) : '—' }}</p><p class="mt-1 text-xs text-slate-500">{{ $weekly['mood'] ? __('dashboard.most_often', ['mood' => __('healo.mood_'.$weekly['mood'])]) : __('dashboard.no_comparison') }}</p></div>
+            </div></section>
+
+            <aside class="healo-card p-5 sm:p-6 xl:col-start-3 xl:row-start-3" aria-labelledby="today-insight-title"><div class="flex items-center justify-between gap-3"><div class="flex items-center gap-3"><span class="grid size-9 place-items-center rounded-full bg-amber-50 text-amber-600"><i data-lucide="lightbulb" class="size-5"></i></span><h2 id="today-insight-title" class="font-bold text-[#17345C]">{{ __('dashboard.today_insight') }}</h2></div><span class="rounded-full bg-violet-50 px-2 py-1 text-[10px] font-bold text-violet-700">{{ $insight->provider === 'groq' ? __('dashboard.powered_groq') : __('dashboard.local_provider') }}</span></div><a href="{{ route('health-insights.index') }}" class="mt-5 block rounded-xl bg-[#EAF8F2] p-4 transition hover:bg-emerald-100"><p class="text-sm leading-6 text-[#17345C]">{{ $insight->insights[0]['description'] ?? $insight->summary }}</p><span class="mt-3 inline-flex items-center gap-1 text-xs font-bold text-emerald-700">{{ __('dashboard.view_all') }}<i data-lucide="chevron-right" class="size-3"></i></span></a><p class="mt-3 flex items-center gap-1 text-[11px] text-slate-500">{{ __('dashboard.based_on_data') }}<i data-lucide="info" class="size-3"></i></p><p class="mt-2 text-[11px] leading-5 text-slate-400">{{ __('dashboard.not_diagnosis') }}</p></aside>
+
+            <aside class="healo-card p-5 sm:p-6 xl:col-start-3 xl:row-start-4" aria-labelledby="quick-actions-title"><h2 id="quick-actions-title" class="font-bold text-[#17345C]">{{ __('dashboard.quick_actions') }}</h2><div class="mt-4 grid grid-cols-2 gap-3">@foreach([
+                [route('meals.create'), 'utensils', __('dashboard.add_meal'), 'bg-emerald-50 text-emerald-700'],
+                [route('health-journals.create'), 'notebook-pen', __('wellness.write_journal'), 'bg-violet-50 text-violet-700'],
+                [route('bmi.index'), 'gauge', __('dashboard.view_bmi'), 'bg-sky-50 text-sky-700'],
+                [route('nutrition.index'), 'chart-no-axes-combined', __('dashboard.view_nutrition'), 'bg-amber-50 text-amber-700'],
+                [route('symptom-checker.create'), 'shield-check', __('dashboard.check_symptoms'), 'bg-rose-50 text-rose-600'],
+                [route('health-assistant.index'), 'message-circle-heart', __('dashboard.ask_ai'), 'bg-violet-50 text-violet-700'],
+            ] as [$url, $icon, $label, $colors])<a href="{{ $url }}" class="flex min-h-14 items-center gap-3 rounded-xl border border-transparent bg-slate-50 p-3 text-xs font-semibold text-[#17345C] transition hover:border-slate-200 hover:bg-white"><span class="grid size-8 shrink-0 place-items-center rounded-full {{ $colors }}"><i data-lucide="{{ $icon }}" class="size-4"></i></span><span>{{ $label }}</span></a>@endforeach</div></aside>
+
+            <section class="flex flex-col gap-3 rounded-xl border border-sky-100 bg-sky-50 px-4 py-3 text-xs text-sky-800 sm:flex-row sm:items-center sm:justify-between xl:col-span-3"><p class="flex items-start gap-2"><i data-lucide="info" class="mt-0.5 size-4 shrink-0"></i><span>{{ __('dashboard.ai_information', ['provider' => $providerLabel]) }}</span></p><a href="{{ route('health-insights.index') }}" class="inline-flex shrink-0 items-center gap-1 font-bold text-sky-700">{{ __('dashboard.learn_more') }}<i data-lucide="arrow-right" class="size-3"></i></a></section>
+        </div>
     </div>
-</x-app-layout>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const canvas = document.getElementById('dashboard-bmi-chart');
+            if (!canvas || !window.Healo?.chart) return;
+            const Chart = await window.Healo.chart();
+            const trends = @js($trends);
+            const empty = document.getElementById('dashboard-chart-empty');
+            const renderState = (period) => {
+                const hasData = (trends[period]?.values ?? []).length > 0;
+                canvas.classList.toggle('hidden', !hasData);
+                empty.classList.toggle('hidden', hasData);
+                return hasData;
+            };
+            const chart = new Chart(canvas, {
+                type: 'line',
+                data: { labels: trends[30].labels, datasets: [{ label: 'BMI', data: trends[30].values, borderColor: '#159A70', backgroundColor: 'rgba(21,154,112,.08)', fill: true, borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#159A70', tension: .35 }] },
+                options: { responsive: true, maintainAspectRatio: false, interaction: { intersect: false, mode: 'index' }, plugins: { legend: { display: false } }, scales: { x: { grid: { color: '#F1F5F9' }, ticks: { color: '#64748B', maxTicksLimit: 7 } }, y: { grid: { color: '#F1F5F9' }, ticks: { color: '#64748B' } } } },
+            });
+            renderState(30);
+            window.addEventListener('dashboard-period', event => {
+                const period = event.detail;
+                chart.data.labels = trends[period].labels;
+                chart.data.datasets[0].data = trends[period].values;
+                chart.update();
+                renderState(period);
+            });
+        });
+    </script>
+</x-app-layout>

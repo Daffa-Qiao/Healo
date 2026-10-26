@@ -22,4 +22,3 @@ class HealthJournalPolicy
         return $user->id === $journal->user_id;
     }
 }
-

@@ -25,4 +25,3 @@ return new class extends Migration
         Schema::dropIfExists('health_journal_entries');
     }
 };
-

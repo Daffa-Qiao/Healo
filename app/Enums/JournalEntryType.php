@@ -8,4 +8,3 @@ enum JournalEntryType: string
     case Symptom = 'symptom';
     case Note = 'note';
 }
-

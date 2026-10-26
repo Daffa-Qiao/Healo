@@ -10,4 +10,3 @@ enum ActivityLevel: string
     case Active = 'active';
     case VeryActive = 'very_active';
 }
-

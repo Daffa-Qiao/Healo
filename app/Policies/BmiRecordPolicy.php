@@ -17,4 +17,3 @@ class BmiRecordPolicy
         return $user->id === $record->user_id;
     }
 }
-

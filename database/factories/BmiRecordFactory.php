@@ -3,10 +3,11 @@
 namespace Database\Factories;
 
 use App\Enums\BmiCategory;
+use App\Models\BmiRecord;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/** @extends Factory<\App\Models\BmiRecord> */
+/** @extends Factory<BmiRecord> */
 class BmiRecordFactory extends Factory
 {
     public function definition(): array
@@ -30,4 +31,3 @@ class BmiRecordFactory extends Factory
         ];
     }
 }
-

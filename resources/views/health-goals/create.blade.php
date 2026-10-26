@@ -1,0 +1,1 @@
+<x-app-layout><x-slot name="title">{{ __('insights.add_goal') }}</x-slot><x-slot name="header"><h1 class="text-lg font-bold text-slate-900">{{ __('insights.add_goal') }}</h1></x-slot><div class="mx-auto max-w-2xl"><form method="POST" action="{{ route('health-goals.store') }}" class="healo-card p-6 sm:p-8">@include('health-goals.partials.form')</form></div></x-app-layout>

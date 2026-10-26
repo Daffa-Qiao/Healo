@@ -2,9 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Enums\UserRole;
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,16 +11,21 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create([
-            'name' => 'HEALO Admin',
-            'email' => 'admin@healo.test',
-            'role' => UserRole::Admin,
-        ]);
+        if (! app()->environment(['local', 'testing'])) {
+            $this->command?->warn('Development seed data was skipped outside local/testing.');
 
-        User::factory()->create([
-            'name' => 'Demo User',
-            'email' => 'demo@healo.test',
-            'role' => UserRole::User,
+            return;
+        }
+
+        $this->call([
+            DevelopmentAccountSeeder::class,
+            DemoHealthDataSeeder::class,
+            HealthyMenuSeeder::class,
+            DemoNutritionDataSeeder::class,
+            DemoHealthAIDataSeeder::class,
+            DemoHealthGoalSeeder::class,
+            DemoHealthPlanSeeder::class,
+            DemoNotificationSeeder::class,
         ]);
     }
 }

@@ -32,7 +32,7 @@ Application Services
 | Nutrition | Food catalogue, food log, nutrition totals and calorie targets |
 | AI | Provider-neutral symptom analysis and food recognition |
 | Menu | Healthy-menu catalogue and constraint-aware recommendations |
-| Notification | In-app notifications and optional Reverb delivery |
+| Notification | Durable owner-scoped notifications, preferences, reminders, quiet hours, queue delivery and Reverb updates |
 | Reporting | User-owned PDF exports |
 | Administration | Aggregate dashboards and catalogue management; no implicit access to private health records |
 | Audit | Minimal, redacted records of security-sensitive actions |
@@ -72,7 +72,23 @@ Controllers translate HTTP input and output. Form Requests validate and authoriz
 
 ## Web, API, and realtime
 
-Blade + Tailwind + Alpine.js is the primary UI. `/api/v1` mirrors domain capabilities using Sanctum and API Resources. Reverb is used only for asynchronous processing status and notifications, with database notifications as the durable source of truth.
+Blade + Tailwind + Alpine.js is the primary UI. `/api/v1` mirrors domain capabilities using Sanctum and API Resources. Database notifications are the durable source of truth. Reminder generation runs in retry-safe queue jobs, while owner-private Reverb channels update the Alpine notification badge and toast without polling. Reverb outages do not block persistence or normal application requests because broadcasting is queued.
+
+## Notification flow
+
+```text
+Laravel Scheduler
+  -> healo:send-reminders --respect-preferences
+  -> SendWellnessReminderJob (notifications queue)
+  -> ReminderService reads owner-scoped health data
+  -> NotificationService applies preferences, quiet hours and deduplication
+  -> notifications table
+  -> queued NotificationCreated broadcast
+  -> private-users.{id}.notifications
+  -> Laravel Echo / Reverb / Alpine UI
+```
+
+Quiet-hours records remain durable with a future `available_at`. `healo:deliver-notifications` atomically claims due rows using `delivered_at`, so scheduler overlap or queue retry cannot broadcast the same record twice. No raw journal, meal, profile, email, provider detail, or medical assessment is included in broadcast payloads.
 
 ## Configuration
 

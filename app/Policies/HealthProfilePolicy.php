@@ -17,4 +17,3 @@ class HealthProfilePolicy
         return $user->id === $profile->user_id;
     }
 }
-

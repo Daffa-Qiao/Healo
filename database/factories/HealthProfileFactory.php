@@ -5,10 +5,11 @@ namespace Database\Factories;
 use App\Enums\ActivityLevel;
 use App\Enums\Gender;
 use App\Enums\HealthGoal;
+use App\Models\HealthProfile;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/** @extends Factory<\App\Models\HealthProfile> */
+/** @extends Factory<HealthProfile> */
 class HealthProfileFactory extends Factory
 {
     public function definition(): array
@@ -27,4 +28,3 @@ class HealthProfileFactory extends Factory
         ];
     }
 }
-

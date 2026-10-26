@@ -1,0 +1,8 @@
+@csrf
+@if(isset($meal)) @method('PUT') @endif
+<div class="grid gap-5 sm:grid-cols-2">
+    <div><x-input-label for="meal_date" :value="__('nutrition.meal_date')"/><x-text-input id="meal_date" name="meal_date" type="date" max="{{ now()->toDateString() }}" required class="mt-1 w-full" :value="old('meal_date', isset($meal) ? $meal->meal_date->toDateString() : now()->toDateString())"/><x-input-error :messages="$errors->get('meal_date')" class="mt-2"/></div>
+    <div><x-input-label for="meal_type" :value="__('nutrition.meal_type')"/><select id="meal_type" name="meal_type" required class="mt-1 w-full rounded-xl border-slate-300">@foreach($mealTypes as $type)<option value="{{ $type->value }}" @selected(old('meal_type', isset($meal) ? $meal->meal_type->value : 'breakfast') === $type->value)>{{ __('nutrition.meal_'.$type->value) }}</option>@endforeach</select><x-input-error :messages="$errors->get('meal_type')" class="mt-2"/></div>
+</div>
+<div class="mt-5"><x-input-label for="notes" :value="__('nutrition.notes')"/><textarea id="notes" name="notes" rows="4" class="mt-1 w-full rounded-xl border-slate-300" placeholder="{{ __('nutrition.notes_placeholder') }}">{{ old('notes', $meal->notes ?? '') }}</textarea><x-input-error :messages="$errors->get('notes')" class="mt-2"/></div>
+<div class="mt-7 flex flex-wrap gap-3"><button class="healo-button-primary"><i data-lucide="save" class="size-4"></i>{{ isset($meal) ? __('nutrition.update_meal') : __('nutrition.save_meal') }}</button><a href="{{ isset($meal) ? route('meals.show', $meal) : route('meals.index') }}" class="healo-button-secondary">{{ __('nutrition.cancel') }}</a></div>

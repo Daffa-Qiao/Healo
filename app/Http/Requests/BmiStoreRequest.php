@@ -21,4 +21,3 @@ class BmiStoreRequest extends FormRequest
         ];
     }
 }
-

@@ -10,4 +10,3 @@ enum HealthGoal: string
     case GainWeight = 'gain_weight';
     case ImproveFitness = 'improve_fitness';
 }
-

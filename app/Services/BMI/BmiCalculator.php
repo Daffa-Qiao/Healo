@@ -26,4 +26,3 @@ class BmiCalculator
         return new BmiResult($value, $category);
     }
 }
-

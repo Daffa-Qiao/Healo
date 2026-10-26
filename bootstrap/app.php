@@ -13,7 +13,13 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+    ->withBroadcasting(__DIR__.'/../routes/channels.php')
     ->withMiddleware(function (Middleware $middleware) {
+        // The application is commonly exposed through an HTTPS reverse proxy
+        // (for example ngrok). Trust its forwarded scheme/host so Laravel does
+        // not generate insecure HTTP asset, link, and form URLs.
+        $middleware->trustProxies(at: '*');
+
         $middleware->web(append: [SetLocale::class]);
         $middleware->alias(['role' => EnsureUserHasRole::class]);
     })
