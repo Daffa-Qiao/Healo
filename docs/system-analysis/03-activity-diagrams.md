@@ -2,6 +2,10 @@
 
 Seluruh activity diagram menggunakan swimlane. Hanya User dan Admin yang diperlakukan sebagai aktor. Lane Sistem HEALO menunjukkan tanggung jawab aplikasi, database, scheduler, queue, provider, dan layanan internal; lane tersebut bukan aktor tambahan.
 
+Versi poster visual bergaya infografik tersedia dalam format [PNG](activity-diagram-poster.png) dan [HTML yang dapat diedit](activity-diagram-poster.html).
+
+![Poster Activity Diagram HEALO](activity-diagram-poster.png)
+
 ID pada judul merujuk ke [deskripsi use case](02-use-case-descriptions.md).
 
 ## AD-01 — Akses, autentikasi, dan akun (UC-01–UC-09)

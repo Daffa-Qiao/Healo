@@ -10,6 +10,8 @@ Dokumen ini memetakan implementasi aplikasi HEALO per 26 Oktober 2026. Sumber an
 4. [Use case diagram](04-use-case-diagrams.md)
 5. [Class diagram](05-class-diagrams.md)
 
+Poster activity diagram: [PNG siap pakai](activity-diagram-poster.png) · [HTML yang dapat diedit](activity-diagram-poster.html)
+
 ## Batasan dan konvensi
 
 - Cakupan utama adalah fitur yang benar-benar memiliki route/implementasi saat ini, bukan seluruh ide pada roadmap.
