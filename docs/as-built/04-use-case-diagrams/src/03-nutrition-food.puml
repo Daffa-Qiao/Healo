@@ -1,0 +1,63 @@
+@startuml
+!pragma layout smetana
+title HEALO — Nutrition, Meal, Food Analysis & Healthy Menu
+left to right direction
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam defaultFontName Arial
+skinparam ArrowColor #334155
+skinparam ActorBorderColor #0F4C81
+skinparam UsecaseBorderColor #D97706
+skinparam UsecaseBackgroundColor #FFFBEB
+
+actor User as USER
+
+rectangle "HEALO" #FFFFFF {
+  package "Nutrition" #FFF7E6 {
+    usecase "UC-NUT-01\nMengelola Profil &\nTarget Nutrisi" as NUT01
+    usecase "UC-NUT-02\nMelihat Ringkasan Nutrisi" as NUT02
+  }
+  package "Meal Tracking" #FEF3C7 {
+    usecase "UC-MEAL-01\nMengelola Catatan Makan" as MEAL01
+    usecase "UC-MEAL-02\nMengelola Item Makanan" as MEAL02
+  }
+  package "AI Food Analysis" #F3E8FF {
+    usecase "UC-FOOD-01\nMemindai Foto Makanan" as FOOD01
+    usecase "UC-FOOD-02\nMeninjau & Mengonfirmasi\nHasil Analisis" as FOOD02
+    usecase "UC-FOOD-03\nMengelola Draft Analisis" as FOOD03
+  }
+  package "Healthy Menu" #ECFDF5 {
+    usecase "UC-MENU-01\nMencari & Memfilter Menu" as MENU01
+    usecase "UC-MENU-02\nMelihat Rekomendasi\nMenu Personal" as MENU02
+  }
+}
+
+USER --> NUT01
+USER --> NUT02
+USER --> MEAL01
+USER --> MEAL02
+USER --> FOOD01
+USER --> FOOD02
+USER --> FOOD03
+USER --> MENU01
+USER --> MENU02
+
+MEAL02 ..> MEAL01 : <<extend>>\n[kelola item]
+FOOD02 ..> FOOD01 : <<extend>>\n[draft siap direview]
+FOOD03 ..> FOOD01 : <<extend>>\n[draft tersedia]
+FOOD02 ..> MEAL01 : <<include>>\nbuat meal terkonfirmasi
+FOOD02 ..> MEAL02 : <<include>>\nbuat item terkoreksi
+
+note right of FOOD02
+  Meal tidak dibuat saat scan.
+  User harus melihat label nutrisi,
+  mengoreksi, lalu mengonfirmasi.
+end note
+
+legend bottom
+  <<include>> = behavior wajib pada alur sukses.
+  <<extend>> = behavior opsional dengan guard.
+endlegend
+@enduml
+

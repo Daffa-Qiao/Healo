@@ -1,0 +1,66 @@
+@startuml
+!pragma layout smetana
+title HEALO — Public, Authentication, Preferences & Account
+left to right direction
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam defaultFontName Arial
+skinparam ArrowColor #334155
+skinparam ActorBorderColor #0F4C81
+skinparam UsecaseBorderColor #0284C7
+skinparam UsecaseBackgroundColor #F0F9FF
+
+actor User as USER
+actor Admin as ADMIN
+
+rectangle "HEALO" #FFFFFF {
+  package "Public" #F8FAFC {
+    usecase "UC-PUB-01\nMelihat Landing Page" as PUB01
+  }
+  package "Authentication" #E8F4FF {
+    usecase "UC-AUTH-01\nRegistrasi Akun" as AUTH01
+    usecase "UC-AUTH-02\nLogin" as AUTH02
+    usecase "UC-AUTH-03\nLogout" as AUTH03
+    usecase "UC-AUTH-04\nVerifikasi Email" as AUTH04
+    usecase "UC-AUTH-05\nReset Password" as AUTH05
+    usecase "UC-AUTH-06\nKonfirmasi & Ubah Password" as AUTH06
+  }
+  package "Preferences & Account" #ECFDF5 {
+    usecase "UC-PREF-01\nMengubah Bahasa Aplikasi" as PREF01
+    usecase "UC-ACC-01\nMelihat & Memperbarui\nProfil Akun" as ACC01
+    usecase "UC-ACC-02\nMenghapus Akun Sendiri" as ACC02
+  }
+}
+
+USER --> PUB01
+USER --> AUTH01
+USER --> AUTH02
+USER --> AUTH03
+USER --> AUTH04
+USER --> AUTH05
+USER --> AUTH06
+USER --> PREF01
+USER --> ACC01
+USER --> ACC02
+
+ADMIN --> AUTH02
+ADMIN --> AUTH03
+ADMIN --> AUTH04
+ADMIN --> AUTH05
+ADMIN --> AUTH06
+ADMIN --> PREF01
+ADMIN --> ACC01
+ADMIN --> ACC02
+
+note right of AUTH04
+  Mail transport adalah komponen pendukung,
+  bukan aktor pada diagram.
+end note
+
+legend bottom
+  Garis solid = association aktor dengan use case.
+  Tidak ada relasi include/extend yang dipaksakan pada domain ini.
+endlegend
+@enduml
+

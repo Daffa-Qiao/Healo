@@ -1,0 +1,53 @@
+@startuml
+!pragma layout smetana
+title HEALO — Healbot & Symptom Checker
+left to right direction
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam defaultFontName Arial
+skinparam ArrowColor #334155
+skinparam ActorBorderColor #0F4C81
+skinparam UsecaseBorderColor #7C3AED
+skinparam UsecaseBackgroundColor #F5F3FF
+
+actor User as USER
+
+rectangle "HEALO" #FFFFFF {
+  package "Healbot" #E8F4FF {
+    usecase "UC-AST-01\nMengelola Percakapan\nHealbot" as AST01
+    usecase "UC-AST-02\nBerkonsultasi dengan\nHealbot" as AST02
+  }
+  package "Symptom Checker" #F3E8FF {
+    usecase "UC-SYM-01\nMemeriksa Gejala" as SYM01
+    usecase "UC-SYM-02\nMengelola Riwayat\nPemeriksaan" as SYM02
+    usecase "UC-SYM-03\nMenyimpan Pemeriksaan\nke Jurnal" as SYM03
+  }
+}
+
+USER --> AST01
+USER --> AST02
+USER --> SYM01
+USER --> SYM02
+USER --> SYM03
+
+SYM03 ..> SYM02 : <<extend>>\n[assessment tersimpan]
+
+note right of AST02
+  Safety diagnosis/dosis/prompt injection,
+  emergency detection, provider call,
+  parser, dan fallback adalah bagian
+  internal dari use case ini.
+end note
+
+note right of SYM01
+  Red flag diperiksa sebelum provider.
+  Hasil dapat ephemeral atau disimpan.
+end note
+
+legend bottom
+  Aktor hanya User. AI Provider adalah komponen pendukung,
+  bukan aktor dan bukan pengganti diagnosis medis.
+endlegend
+@enduml
+

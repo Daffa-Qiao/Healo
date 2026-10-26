@@ -1,0 +1,51 @@
+@startuml
+!pragma layout smetana
+title HEALO — Dashboard & Personal Health Records
+left to right direction
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam defaultFontName Arial
+skinparam ArrowColor #334155
+skinparam ActorBorderColor #0F4C81
+skinparam UsecaseBorderColor #059669
+skinparam UsecaseBackgroundColor #ECFDF5
+
+actor User as USER
+
+rectangle "HEALO" #FFFFFF {
+  package "Dashboard" #E8F4FF {
+    usecase "UC-DASH-01\nMelihat Dashboard Kesehatan" as DASH01
+  }
+  package "Health Profile & BMI" #ECFDF5 {
+    usecase "UC-HPR-01\nMengelola Profil Kesehatan" as HPR01
+    usecase "UC-BMI-01\nMenghitung & Mencatat BMI" as BMI01
+    usecase "UC-BMI-02\nMengelola Riwayat BMI" as BMI02
+  }
+  package "Health Journal" #F0FDFA {
+    usecase "UC-JRN-01\nMengelola Jurnal Kesehatan" as JRN01
+    usecase "UC-JRN-02\nMengelola Entri Jurnal" as JRN02
+    usecase "UC-JRN-03\nMelihat Dashboard &\nTren Jurnal" as JRN03
+  }
+}
+
+USER --> DASH01
+USER --> HPR01
+USER --> BMI01
+USER --> BMI02
+USER --> JRN01
+USER --> JRN02
+USER --> JRN03
+
+JRN02 ..> JRN01 : <<extend>>\n[kelola detail jurnal]
+
+note right of DASH01
+  Dashboard membaca data owner-scoped
+  tanpa membuat record kesehatan baru.
+end note
+
+legend bottom
+  <<extend>> = perilaku opsional pada extension point yang ditandai guard.
+endlegend
+@enduml
+

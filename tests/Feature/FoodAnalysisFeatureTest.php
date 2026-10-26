@@ -91,7 +91,13 @@ class FoodAnalysisFeatureTest extends TestCase
 
         $analysis = $user->foodAnalyses()->firstOrFail();
         $this->actingAs($user)->get('/food-analysis/'.$analysis->id)
-            ->assertOk()->assertSee(__('nutrition.low_confidence'));
+            ->assertOk()
+            ->assertSee(__('nutrition.low_confidence'))
+            ->assertSee(__('nutrition.estimated_values_guide'))
+            ->assertSee(__('nutrition.calories_with_unit'))
+            ->assertSee(__('nutrition.protein_with_unit'))
+            ->assertSee(__('nutrition.carbohydrates_with_unit'))
+            ->assertSee(__('nutrition.fat_with_unit'));
     }
 
     public function test_expired_private_images_are_cleaned_up(): void

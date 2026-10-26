@@ -1,0 +1,57 @@
+@startuml
+!pragma layout smetana
+title HEALO — Insights, Goals & Daily Wellness Plan
+left to right direction
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam defaultFontName Arial
+skinparam ArrowColor #334155
+skinparam ActorBorderColor #0F4C81
+skinparam UsecaseBorderColor #0F766E
+skinparam UsecaseBackgroundColor #F0FDFA
+
+actor User as USER
+
+rectangle "HEALO" #FFFFFF {
+  package "Health Insights" #E6FFFB {
+    usecase "UC-INS-01\nMelihat Ringkasan\nHealth Insights" as INS01
+    usecase "UC-INS-02\nMelihat Tren &\nRingkasan Mingguan" as INS02
+    usecase "UC-INS-03\nMendapat Personalized\nAI Insight" as INS03
+  }
+  package "Health Goals" #ECFDF5 {
+    usecase "UC-GOAL-01\nMengelola Health Goal" as GOAL01
+    usecase "UC-GOAL-02\nMemantau Progress\nHealth Goal" as GOAL02
+  }
+  package "Daily Wellness Plan" #E8F4FF {
+    usecase "UC-PLAN-01\nMembuat & Melihat\nHealth Plan Harian" as PLAN01
+    usecase "UC-PLAN-02\nMengelola Penyelesaian\nTask Harian" as PLAN02
+    usecase "UC-PLAN-03\nMelihat Personalisasi\nDaily Wellness" as PLAN03
+  }
+}
+
+USER --> INS01
+USER --> INS02
+USER --> INS03
+USER --> GOAL01
+USER --> GOAL02
+USER --> PLAN01
+USER --> PLAN02
+USER --> PLAN03
+
+INS03 ..> INS01 : <<extend>>\n[personalized insight diminta]
+GOAL02 ..> GOAL01 : <<extend>>\n[pantau progress]
+PLAN02 ..> PLAN01 : <<extend>>\n[task manual dipilih]
+PLAN03 ..> PLAN01 : <<extend>>\n[plan tersedia]
+
+note right of INS03
+  AI hanya menerima aggregate minimal.
+  Output unsafe/invalid menggunakan fallback.
+end note
+
+legend bottom
+  <<extend>> menunjukkan goal opsional yang berjalan
+  pada extension point/guard yang tertulis.
+endlegend
+@enduml
+

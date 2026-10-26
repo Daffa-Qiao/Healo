@@ -1,0 +1,50 @@
+@startuml
+!pragma layout smetana
+title HEALO — Notifications & Administration
+left to right direction
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam defaultFontName Arial
+skinparam ArrowColor #334155
+skinparam ActorBorderColor #0F4C81
+skinparam UsecaseBorderColor #4F46E5
+skinparam UsecaseBackgroundColor #EEF2FF
+
+actor User as USER
+actor Admin as ADMIN
+
+rectangle "HEALO" #FFFFFF {
+  package "Notifications" #EEF2FF {
+    usecase "UC-NOT-01\nMengelola Pusat\nNotifikasi" as NOT01
+    usecase "UC-NOT-02\nMengelola Preferensi\nNotifikasi" as NOT02
+    usecase "UC-NOT-03\nMenerima Reminder &\nNotifikasi" as NOT03
+  }
+  package "Administration" #F5F3FF {
+    usecase "UC-ADM-01\nMelihat Dashboard Admin" as ADM01
+  }
+}
+
+USER --> NOT01
+USER --> NOT02
+USER --> NOT03
+ADMIN --> ADM01
+
+note right of NOT03
+  Scheduler, queue, quiet-hour delivery,
+  event, dan Reverb adalah komponen internal.
+  Durable notification tetap tersedia
+  ketika realtime offline.
+end note
+
+note right of ADM01
+  Dashboard hanya menampilkan aggregate.
+  Admin tidak memiliki bypass ke data privat.
+end note
+
+legend bottom
+  Garis solid = association aktor-use case.
+  Fitur admin planned tidak ditampilkan.
+endlegend
+@enduml
+

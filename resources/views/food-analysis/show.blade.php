@@ -11,7 +11,61 @@
             <form method="POST" action="{{ route('food-analysis.confirm', $analysis) }}" class="healo-card p-6 sm:p-8">@csrf
                 <p class="healo-kicker">{{ __('nutrition.analysis_result') }}</p><h2 class="mt-2 text-2xl font-black text-slate-950">{{ __('nutrition.review_required') }}</h2>
                 <div class="mt-6 grid gap-4 sm:grid-cols-2"><div><x-input-label for="meal_date" :value="__('nutrition.meal_date')"/><x-text-input id="meal_date" name="meal_date" type="date" max="{{ now()->toDateString() }}" required class="mt-1 w-full" :value="old('meal_date', now()->toDateString())"/></div><div><x-input-label for="meal_type" :value="__('nutrition.meal_type')"/><select id="meal_type" name="meal_type" class="mt-1 w-full rounded-xl border-slate-300">@foreach($mealTypes as $type)<option value="{{ $type->value }}" @selected(old('meal_type') === $type->value)>{{ __('nutrition.meal_'.$type->value) }}</option>@endforeach</select></div></div>
-                <div class="mt-6 space-y-4">@foreach($foods as $index => $food)<fieldset class="rounded-2xl border border-slate-200 p-4"><legend class="px-2 text-xs font-bold uppercase tracking-wider text-slate-500">{{ __('nutrition.food_name') }} {{ $index + 1 }}</legend><div class="grid gap-3 sm:grid-cols-4"><input name="foods[{{ $index }}][food_name]" value="{{ $food['food_name'] }}" required class="rounded-xl border-slate-200 sm:col-span-2" aria-label="{{ __('nutrition.food_name') }}"><input name="foods[{{ $index }}][serving_size]" type="number" min="0.01" step="0.01" value="{{ $food['serving_size'] }}" required class="rounded-xl border-slate-200" aria-label="{{ __('nutrition.serving_size') }}"><input name="foods[{{ $index }}][serving_unit]" value="{{ $food['serving_unit'] }}" required class="rounded-xl border-slate-200" aria-label="{{ __('nutrition.serving_unit') }}"><input name="foods[{{ $index }}][calories]" type="number" min="0" step="0.01" value="{{ $food['calories'] }}" required class="rounded-xl border-slate-200" aria-label="{{ __('nutrition.calories') }}"><input name="foods[{{ $index }}][protein_g]" type="number" min="0" step="0.01" value="{{ $food['protein_g'] ?? 0 }}" class="rounded-xl border-slate-200" aria-label="{{ __('nutrition.protein') }}"><input name="foods[{{ $index }}][carbohydrates_g]" type="number" min="0" step="0.01" value="{{ $food['carbohydrates_g'] ?? 0 }}" class="rounded-xl border-slate-200" aria-label="{{ __('nutrition.carbohydrates') }}"><input name="foods[{{ $index }}][fat_g]" type="number" min="0" step="0.01" value="{{ $food['fat_g'] ?? 0 }}" class="rounded-xl border-slate-200" aria-label="{{ __('nutrition.fat') }}"></div></fieldset>@endforeach</div>
+                <section class="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4" aria-labelledby="estimated-values-guide">
+                    <div class="flex gap-3">
+                        <i data-lucide="info" class="mt-0.5 size-5 shrink-0 text-emerald-700"></i>
+                        <div>
+                            <h3 id="estimated-values-guide" class="font-bold text-emerald-950">{{ __('nutrition.estimated_values_guide') }}</h3>
+                            <p class="mt-1 text-sm leading-6 text-emerald-900">{{ __('nutrition.estimated_values_guide_copy') }}</p>
+                        </div>
+                    </div>
+                    <dl class="mt-3 grid gap-2 text-xs text-emerald-950 sm:grid-cols-2">
+                        <div><dt class="font-bold">{{ __('nutrition.serving_size') }} + {{ __('nutrition.serving_unit') }}</dt><dd>{{ __('nutrition.serving_explanation') }}</dd></div>
+                        <div><dt class="font-bold">{{ __('nutrition.calories_with_unit') }}</dt><dd>{{ __('nutrition.calories_explanation') }}</dd></div>
+                        <div><dt class="font-bold">{{ __('nutrition.protein_with_unit') }}</dt><dd>{{ __('nutrition.protein_explanation') }}</dd></div>
+                        <div><dt class="font-bold">{{ __('nutrition.carbohydrates_with_unit') }}</dt><dd>{{ __('nutrition.carbohydrates_explanation') }}</dd></div>
+                        <div><dt class="font-bold">{{ __('nutrition.fat_with_unit') }}</dt><dd>{{ __('nutrition.fat_explanation') }}</dd></div>
+                    </dl>
+                </section>
+
+                <div class="mt-6 space-y-4">
+                    @foreach($foods as $index => $food)
+                        <fieldset class="rounded-2xl border border-slate-200 p-4">
+                            <legend class="px-2 text-xs font-bold uppercase tracking-wider text-slate-500">{{ __('nutrition.food_item') }} {{ $index + 1 }}</legend>
+                            <p class="mb-4 text-xs text-slate-500">{{ __('nutrition.food_item_estimate_copy') }}</p>
+                            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                                <div class="sm:col-span-2">
+                                    <label for="food-{{ $index }}-name" class="text-xs font-bold text-slate-700">{{ __('nutrition.food_name') }}</label>
+                                    <input id="food-{{ $index }}-name" name="foods[{{ $index }}][food_name]" value="{{ $food['food_name'] }}" required class="mt-1 w-full rounded-xl border-slate-200">
+                                </div>
+                                <div>
+                                    <label for="food-{{ $index }}-serving-size" class="text-xs font-bold text-slate-700">{{ __('nutrition.serving_size') }}</label>
+                                    <input id="food-{{ $index }}-serving-size" name="foods[{{ $index }}][serving_size]" type="number" min="0.01" step="0.01" value="{{ $food['serving_size'] }}" required class="mt-1 w-full rounded-xl border-slate-200">
+                                </div>
+                                <div>
+                                    <label for="food-{{ $index }}-serving-unit" class="text-xs font-bold text-slate-700">{{ __('nutrition.serving_unit') }}</label>
+                                    <input id="food-{{ $index }}-serving-unit" name="foods[{{ $index }}][serving_unit]" value="{{ $food['serving_unit'] }}" required class="mt-1 w-full rounded-xl border-slate-200" placeholder="g, ml, porsi">
+                                </div>
+                                <div>
+                                    <label for="food-{{ $index }}-calories" class="text-xs font-bold text-slate-700">{{ __('nutrition.calories_with_unit') }}</label>
+                                    <input id="food-{{ $index }}-calories" name="foods[{{ $index }}][calories]" type="number" min="0" step="0.01" value="{{ $food['calories'] }}" required class="mt-1 w-full rounded-xl border-slate-200">
+                                </div>
+                                <div>
+                                    <label for="food-{{ $index }}-protein" class="text-xs font-bold text-slate-700">{{ __('nutrition.protein_with_unit') }}</label>
+                                    <input id="food-{{ $index }}-protein" name="foods[{{ $index }}][protein_g]" type="number" min="0" step="0.01" value="{{ $food['protein_g'] ?? 0 }}" class="mt-1 w-full rounded-xl border-slate-200">
+                                </div>
+                                <div>
+                                    <label for="food-{{ $index }}-carbohydrates" class="text-xs font-bold text-slate-700">{{ __('nutrition.carbohydrates_with_unit') }}</label>
+                                    <input id="food-{{ $index }}-carbohydrates" name="foods[{{ $index }}][carbohydrates_g]" type="number" min="0" step="0.01" value="{{ $food['carbohydrates_g'] ?? 0 }}" class="mt-1 w-full rounded-xl border-slate-200">
+                                </div>
+                                <div>
+                                    <label for="food-{{ $index }}-fat" class="text-xs font-bold text-slate-700">{{ __('nutrition.fat_with_unit') }}</label>
+                                    <input id="food-{{ $index }}-fat" name="foods[{{ $index }}][fat_g]" type="number" min="0" step="0.01" value="{{ $food['fat_g'] ?? 0 }}" class="mt-1 w-full rounded-xl border-slate-200">
+                                </div>
+                            </div>
+                        </fieldset>
+                    @endforeach
+                </div>
                 <div class="mt-5"><x-input-label for="notes" :value="__('nutrition.notes')"/><textarea id="notes" name="notes" rows="3" class="mt-1 w-full rounded-xl border-slate-300">{{ old('notes') }}</textarea></div><x-input-error :messages="$errors->all()" class="mt-3"/>
                 <button class="healo-button-primary mt-7 w-full"><i data-lucide="circle-check" class="size-4"></i>{{ __('nutrition.confirm_and_save') }}</button>
             </form>

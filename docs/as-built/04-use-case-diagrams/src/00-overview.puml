@@ -1,0 +1,97 @@
+@startuml
+!pragma layout smetana
+title HEALO — Use Case Overview (As-Built)
+left to right direction
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam defaultFontName Arial
+skinparam ArrowColor #334155
+skinparam ActorBorderColor #0F4C81
+skinparam ActorFontColor #0F172A
+skinparam UsecaseBorderColor #2563EB
+skinparam UsecaseBackgroundColor #EFF6FF
+skinparam UsecaseFontColor #0F172A
+
+actor User as USER
+actor Admin as ADMIN
+
+rectangle "HEALO\nStandalone Health & Wellness Application" as HEALO #FFFFFF {
+  package "Access & Account" #E8F4FF {
+    usecase "UC-AUTH-01\nRegistrasi Akun" as AUTH01
+    usecase "UC-AUTH-02\nLogin" as AUTH02
+    usecase "UC-ACC-01\nKelola Profil Akun" as ACC01
+  }
+
+  package "Personal Health Records" #ECFDF5 {
+    usecase "UC-HPR-01\nKelola Profil Kesehatan" as HPR01
+    usecase "UC-BMI-01\nHitung & Catat BMI" as BMI01
+    usecase "UC-JRN-01\nKelola Jurnal" as JRN01
+  }
+
+  package "Nutrition & Food" #FFF7E6 {
+    usecase "UC-NUT-02\nRingkasan Nutrisi" as NUT02
+    usecase "UC-MEAL-01\nKelola Catatan Makan" as MEAL01
+    usecase "UC-FOOD-01\nPindai Foto Makanan" as FOOD01
+    usecase "UC-MENU-02\nRekomendasi Menu" as MENU02
+  }
+
+  package "Health AI" #F3E8FF {
+    usecase "UC-AST-02\nKonsultasi Healbot" as AST02
+    usecase "UC-SYM-01\nPeriksa Gejala" as SYM01
+  }
+
+  package "Insights & Wellness" #E6FFFB {
+    usecase "UC-INS-01\nHealth Insights" as INS01
+    usecase "UC-GOAL-01\nKelola Health Goal" as GOAL01
+    usecase "UC-PLAN-01\nHealth Plan Harian" as PLAN01
+  }
+
+  package "Notifications" #EEF2FF {
+    usecase "UC-NOT-01\nPusat Notifikasi" as NOT01
+    usecase "UC-NOT-02\nPreferensi Notifikasi" as NOT02
+    usecase "UC-NOT-03\nTerima Reminder" as NOT03
+  }
+
+  package "Administration" #F5F3FF {
+    usecase "UC-ADM-01\nDashboard Admin" as ADM01
+  }
+}
+
+USER --> AUTH01
+USER --> AUTH02
+USER --> ACC01
+USER --> HPR01
+USER --> BMI01
+USER --> JRN01
+USER --> NUT02
+USER --> MEAL01
+USER --> FOOD01
+USER --> MENU02
+USER --> AST02
+USER --> SYM01
+USER --> INS01
+USER --> GOAL01
+USER --> PLAN01
+USER --> NOT01
+USER --> NOT02
+USER --> NOT03
+
+ADMIN --> AUTH02
+ADMIN --> ACC01
+ADMIN --> ADM01
+
+legend bottom
+  |= Notasi |= Arti |
+  | Actor | Hanya User dan Admin |
+  | Oval | Use case CONFIRMED |
+  | Kotak berwarna | Domain di dalam system boundary HEALO |
+endlegend
+
+note bottom of HEALO
+  Overview ini sengaja ringkas.
+  Seluruh 43 use case ditampilkan pada diagram domain.
+  AI Provider dan infrastruktur bukan aktor use case.
+end note
+@enduml
+
