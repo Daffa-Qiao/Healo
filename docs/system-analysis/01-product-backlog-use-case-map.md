@@ -10,15 +10,15 @@
 
 | ID | Epic | Product backlog / user story | Kriteria penerimaan ringkas | Prioritas | Use case | Kanal | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| PB-01 | Akses | Sebagai pengunjung, saya ingin melihat landing page agar memahami HEALO. | Halaman publik dapat dibuka tanpa login. | Should | UC-01 | Web | Implemented |
+| PB-01 | Akses | Sebagai user, saya ingin melihat landing page agar memahami HEALO. | Halaman publik dapat dibuka tanpa login. | Should | UC-01 | Web | Implemented |
 | PB-02 | Akses | Sebagai pengguna, saya ingin memilih Bahasa Indonesia/Inggris. | Locale valid `id/en` disimpan dan tampilan mengikuti pilihan. | Should | UC-02 | Web | Implemented |
-| PB-03 | Autentikasi | Sebagai pengunjung, saya ingin membuat akun. | Nama, email unik, dan password valid menghasilkan akun user. | Must | UC-03 | Web + API | Implemented |
+| PB-03 | Autentikasi | Sebagai user, saya ingin membuat akun. | Nama, email unik, dan password valid menghasilkan akun user. | Must | UC-03 | Web + API | Implemented |
 | PB-04 | Autentikasi | Sebagai pengguna, saya ingin login dan logout dengan aman. | Kredensial diverifikasi, sesi/token dibuat atau dicabut, percobaan dibatasi. | Must | UC-04 | Web + API | Implemented |
 | PB-05 | Autentikasi | Sebagai pengguna, saya ingin mereset password yang terlupa. | Tautan reset dikirim dan token valid dapat mengganti password. | Must | UC-05 | Web | Implemented |
 | PB-06 | Autentikasi | Sebagai pengguna, saya ingin memverifikasi email. | Tautan bertanda tangan mengisi waktu verifikasi; pengiriman ulang dibatasi. | Must | UC-06 | Web | Implemented |
 | PB-07 | Akun | Sebagai pengguna, saya ingin memperbarui nama, email, bahasa, dan password. | Input tervalidasi; perubahan email membatalkan verifikasi lama. | Must | UC-07 | Web | Implemented |
 | PB-08 | Akun | Sebagai pengguna, saya ingin menghapus akun. | Password dikonfirmasi, sesi dibatalkan, akun di-soft-delete. | Must | UC-08 | Web | Implemented |
-| PB-09 | API | Sebagai klien API, saya ingin autentikasi token dan membaca profil. | Register/login mengembalikan token; endpoint privat memakai Sanctum. | Must | UC-09 | API | Implemented |
+| PB-09 | API | Sebagai user yang memakai API, saya ingin autentikasi token dan membaca profil. | Register/login mengembalikan token; endpoint privat memakai Sanctum. | Must | UC-09 | API | Implemented |
 | PB-10 | Dashboard | Sebagai pengguna, saya ingin ringkasan kesehatan pribadi. | Dashboard menampilkan snapshot, tren, goal, plan, insight, dan quick action dari data pemilik. | Must | UC-10 | Web | Implemented |
 | PB-11 | Kesehatan | Sebagai pengguna, saya ingin menyimpan profil kesehatan dengan persetujuan. | Tinggi, berat, demografi, aktivitas, tujuan, kondisi/alergi tervalidasi; data sensitif terenkripsi. | Must | UC-11 | Web + API | Implemented |
 | PB-12 | BMI | Sebagai pengguna, saya ingin menghitung dan menyimpan BMI. | BMI/kategori dihitung server-side, histori dan tren ditampilkan, profil dapat disinkronkan. | Must | UC-12 | Web + API | Implemented |
@@ -48,7 +48,7 @@
 | PB-36 | Reminder | Sebagai pengguna, saya ingin reminder berdasarkan data aktual. | Scheduler memeriksa jurnal, meal, task, goal, insight, wellness; notifikasi terdeduplikasi. | Should | UC-36 | Internal | Implemented |
 | PB-37 | Notifikasi | Sebagai pengguna, saya ingin badge/toast real-time. | Event privat hanya memuat payload minimum; kegagalan real-time tidak menghilangkan notifikasi durable. | Could | UC-37 | Web + Internal | Implemented |
 | PB-38 | Administrasi | Sebagai admin, saya ingin melihat statistik operasional agregat. | Route hanya role admin dan menampilkan total user, user baru 30 hari, event audit 24 jam. | Should | UC-38 | Web | Implemented |
-| PB-39 | Audit | Sebagai pemilik sistem, saya ingin aksi penting tercatat tanpa isi kesehatan. | Audit menyimpan aktor, aksi, subject, metadata aman, dan hash IP; tidak menyimpan konten sensitif. | Must | UC-39 | Internal | Implemented |
+| PB-39 | Audit | Sebagai admin, saya ingin aksi penting tercatat tanpa isi kesehatan. | Audit menyimpan aktor, aksi, subject, metadata aman, dan hash IP; tidak menyimpan konten sensitif. | Must | UC-39 | Internal | Implemented |
 | PB-40 | Privasi | Sebagai pengguna, saya ingin data kesehatan hanya dapat diakses oleh saya. | Policy/owner query berlaku di web/API; admin tidak mendapat bypass; field sensitif dienkripsi. | Must | Semua UC privat | Web + API | Implemented |
 | PB-41 | Keandalan | Sebagai pengguna, saya ingin fungsi inti tetap tersedia saat provider AI/Reverb gagal. | Provider memiliki fallback; plan/insight inti deterministik; notifikasi tetap tersimpan. | Must | UC-21, UC-25, UC-26, UC-29, UC-32, UC-37 | Semua | Implemented |
 

@@ -1,5 +1,7 @@
 # Use Case Diagram
 
+Seluruh diagram memakai tepat dua aktor bisnis: `User` dan `Admin`. Aktivitas sebelum autentikasi tetap menjadi tanggung jawab User. AI provider, API client, scheduler, queue worker, Reverb, dan komponen internal lain bukan aktor.
+
 Mermaid belum memiliki notasi native UML use case. Karena itu, aktor digambar sebagai node persegi dan use case sebagai node oval/stadium; relasi `include` dan `extend` diberi label eksplisit.
 
 Catatan autentikasi: route web kesehatan menggunakan `auth + verified`, sedangkan endpoint API v1 privat pada implementasi saat ini menggunakan `auth:sanctum + throttle`.
@@ -8,12 +10,8 @@ Catatan autentikasi: route web kesehatan menggunakan `auth + verified`, sedangka
 
 ```mermaid
 flowchart LR
-    Guest[👤 Pengunjung]
-    User[👤 Pengguna]
+    User[👤 User]
     Admin[👤 Admin]
-    AI[🤖 Penyedia AI]
-    Worker[⚙️ Scheduler / Queue Worker]
-    Live[📡 Reverb / Client]
 
     subgraph HEALO[HEALO]
         Access([Akses dan autentikasi<br/>UC-01–UC-09])
@@ -26,19 +24,14 @@ flowchart LR
         Audit([Audit aman<br/>UC-39])
     end
 
-    Guest --> Access
     User --> Access
     User --> Health
     User --> Nutrition
     User --> Assistant
     User --> Wellness
     User --> Notify
+    Admin --> Access
     Admin --> AdminDash
-    AI --> Nutrition
-    AI --> Assistant
-    AI --> Wellness
-    Worker --> Notify
-    Live --> Notify
     Health -. include .-> Audit
     Nutrition -. include .-> Audit
     Assistant -. include .-> Audit
@@ -49,9 +42,8 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    Guest[👤 Pengunjung]
-    User[👤 Pengguna]
-    Api[💻 Klien API]
+    User[👤 User]
+    Admin[👤 Admin]
 
     subgraph HEALO[HEALO — Core & Health]
         UC01([UC-01 Landing page])
@@ -73,11 +65,9 @@ flowchart LR
         UC39([UC-39 Audit aman])
     end
 
-    Guest --> UC01
-    Guest --> UC02
-    Guest --> UC03
-    Guest --> UC04
-    Guest --> UC05
+    User --> UC01
+    User --> UC03
+    User --> UC05
     User --> UC02
     User --> UC04
     User --> UC06
@@ -90,9 +80,8 @@ flowchart LR
     User --> UC14
     User --> UC15
     User --> UC16
-    Api --> UC03
-    Api --> UC04
-    Api --> UC09
+    User --> UC09
+    Admin --> UC04
     UC10 -. uses .-> UC11
     UC14 -. include .-> UC15
     UC16 -. reads .-> UC14
@@ -105,9 +94,8 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    User[👤 Pengguna]
-    Api[💻 Klien API]
-    FoodAI[🤖 Food Analysis Provider]
+    User[👤 User]
+    Admin[👤 Admin]
 
     subgraph HEALO[HEALO — Nutrition]
         UC17([UC-17 Profil nutrisi])
@@ -127,14 +115,6 @@ flowchart LR
     User --> UC21
     User --> UC22
     User --> UC23
-    Api --> UC17
-    Api --> UC18
-    Api --> UC19
-    Api --> UC20
-    Api --> UC21
-    Api --> UC22
-    Api --> UC23
-    FoodAI --> UC21
     UC18 -. reads .-> UC17
     UC18 -. reads .-> UC19
     UC19 -. include .-> UC20
@@ -149,9 +129,8 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    User[👤 Pengguna]
-    Api[💻 Klien API]
-    AI[🤖 Health AI Provider]
+    User[👤 User]
+    Admin[👤 Admin]
 
     subgraph HEALO[HEALO — AI & Wellness]
         UC24([UC-24 Kelola conversation])
@@ -178,20 +157,6 @@ flowchart LR
     User --> UC31
     User --> UC32
     User --> UC33
-    Api --> UC24
-    Api --> UC25
-    Api --> UC26
-    Api --> UC27
-    Api --> UC28
-    Api --> UC29
-    Api --> UC30
-    Api --> UC31
-    Api --> UC32
-    Api --> UC33
-    AI --> UC25
-    AI --> UC26
-    AI --> UC29
-    AI --> UC32
     UC24 -. include .-> UC25
     UC26 -. extend: save .-> UC27
     UC27 -. extend: confirm .-> UC28
@@ -209,11 +174,8 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    User[👤 Pengguna]
+    User[👤 User]
     Admin[👤 Admin]
-    Worker[⚙️ Scheduler / Queue Worker]
-    Live[📡 Reverb / Client]
-    System[⚙️ Sistem]
 
     subgraph HEALO[HEALO — Operations]
         UC34([UC-34 Pusat notifikasi])
@@ -226,11 +188,11 @@ flowchart LR
 
     User --> UC34
     User --> UC35
+    User --> UC36
     User --> UC37
-    Worker --> UC36
-    Live --> UC37
     Admin --> UC38
-    System --> UC39
+    User --> UC39
+    Admin --> UC39
     UC36 -. reads .-> UC35
     UC36 -. create .-> UC34
     UC36 -. extend: broadcast .-> UC37
@@ -243,6 +205,7 @@ Node berikut sengaja tidak dihubungkan ke sistem aktif karena route/surface penu
 
 ```mermaid
 flowchart LR
+    User[👤 User]
     Admin[👤 Admin]
 
     subgraph Planned[Roadmap — Planned]
@@ -257,6 +220,6 @@ flowchart LR
     Admin -. planned .-> P02
     Admin -. planned .-> P03
     Admin -. planned .-> P04
-    Admin -. planned .-> P05
+    User -. planned .-> P05
 ```
 

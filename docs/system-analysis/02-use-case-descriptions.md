@@ -14,7 +14,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengunjung |
+| Aktor | User |
 | Pemicu | Membuka `/`. |
 | Prasyarat | Tidak ada. |
 | Alur utama | 1. Sistem menerima request publik. 2. Sistem merender halaman pengenalan HEALO dan tautan autentikasi. |
@@ -25,7 +25,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengunjung atau Pengguna |
+| Aktor | User |
 | Pemicu | Memilih locale pada UI. |
 | Prasyarat | Locale termasuk `id` atau `en`. |
 | Alur utama | 1. Sistem memvalidasi locale. 2. Locale disimpan pada session dan, bila login, preferensi user. 3. Sistem mengarahkan kembali dengan terjemahan terpilih. |
@@ -36,7 +36,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengunjung / Klien API |
+| Aktor | User |
 | Pemicu | Mengirim formulir registrasi. |
 | Prasyarat | Belum terautentikasi; email belum dipakai. |
 | Alur utama | 1. Validasi nama, email, password dan konfirmasi. 2. Hash password dan buat `User` ber-role user. 3. Web membuat session; API membuat token. 4. Sistem memicu proses verifikasi email. |
@@ -47,7 +47,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna / Admin / Klien API |
+| Aktor | User, Admin |
 | Pemicu | Mengirim kredensial atau memilih logout. |
 | Prasyarat | Untuk login, akun ada dan tidak terhapus; untuk logout, aktor sudah login. |
 | Alur utama | Login: validasi, cek rate limit dan kredensial, regenerasi session atau buat token, arahkan sesuai role. Logout: cabut token/session dan regenerasi CSRF/session state. |
@@ -58,7 +58,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengunjung |
+| Aktor | User |
 | Pemicu | Meminta tautan reset atau mengirim password baru dengan token. |
 | Prasyarat | Email valid; token reset belum kedaluwarsa saat dipakai. |
 | Alur utama | 1. Pengguna meminta reset. 2. Sistem mengirim tautan. 3. Pengguna membuka tautan dan memasukkan password baru. 4. Sistem memvalidasi token lalu memperbarui hash password. |
@@ -69,7 +69,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna |
+| Aktor | User |
 | Pemicu | Membuka tautan verifikasi atau meminta kirim ulang. |
 | Prasyarat | Login; tautan memiliki signature valid untuk akun yang sama. |
 | Alur utama | 1. Sistem memvalidasi ID, hash, dan signature. 2. `email_verified_at` diisi. 3. Pengguna dapat masuk ke area `verified`. |
@@ -80,7 +80,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna |
+| Aktor | User |
 | Pemicu | Menyimpan perubahan profil atau password. |
 | Prasyarat | Login. |
 | Alur utama | 1. Sistem menampilkan profil. 2. Pengguna mengubah nama/email/locale atau password. 3. Sistem memvalidasi dan menyimpan. 4. Bila email berubah, status verifikasi direset. |
@@ -91,7 +91,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna |
+| Aktor | User |
 | Pemicu | Mengonfirmasi penghapusan akun. |
 | Prasyarat | Login dan password saat ini benar. |
 | Alur utama | 1. Sistem meminta konfirmasi kredensial. 2. Session dikeluarkan. 3. User di-soft-delete. 4. Session di-invalidasi dan token CSRF diperbarui. |
@@ -102,7 +102,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Klien API |
+| Aktor | User |
 | Pemicu | Register/login, memanggil endpoint privat, atau logout. |
 | Prasyarat | Format JSON valid; endpoint privat membawa bearer token Sanctum. |
 | Alur utama | 1. Klien memperoleh token. 2. Token dipakai pada endpoint `/api/v1`. 3. Sistem menerapkan auth dan throttle. 4. Logout mencabut token aktif. |
@@ -115,7 +115,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna |
+| Aktor | User |
 | Pemicu | Membuka `/dashboard`. |
 | Prasyarat | Login dan email terverifikasi; health profile meningkatkan kelengkapan pengalaman tetapi bukan syarat membuka dashboard. |
 | Alur utama | 1. Sistem mengambil snapshot owner-scoped. 2. Sistem menghitung BMI, nutrisi, jurnal, goal, plan, weekly comparison, dan insight aman. 3. UI menampilkan kartu, grafik, preview, dan quick action. |
@@ -126,7 +126,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna |
+| Aktor | User |
 | Pemicu | Membuka lalu menyimpan formulir health profile. |
 | Prasyarat | Login dan email terverifikasi; persetujuan pemrosesan data diberikan. |
 | Alur utama | 1. Input tinggi, berat, tanggal lahir, gender, level aktivitas, tujuan, kondisi, alergi, dan consent. 2. Sistem membersihkan/memvalidasi input. 3. Service membuat atau memperbarui satu profil milik user. 4. Field sensitif dienkripsi. |
@@ -137,7 +137,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna |
+| Aktor | User |
 | Pemicu | Mengirim tinggi, berat, dan waktu pengukuran. |
 | Prasyarat | Login dan email terverifikasi. |
 | Alur utama | 1. Validasi nilai fisik dan tanggal. 2. `BmiCalculator` menghitung BMI serta kategori. 3. `BmiRecordService` menyimpan record owner-scoped. 4. Riwayat/grafik diperbarui dan profil dapat diselaraskan. |
@@ -148,7 +148,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna |
+| Aktor | User |
 | Pemicu | Memilih hapus pada item histori. |
 | Prasyarat | Record ada dan dimiliki aktor. |
 | Alur utama | 1. Sistem mencari record pada scope user. 2. Policy mengizinkan delete. 3. Record dihapus dan aksi diaudit. |
@@ -159,7 +159,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna |
+| Aktor | User |
 | Pemicu | Membuat, membuka, mengubah, atau menghapus jurnal. |
 | Prasyarat | Login dan email terverifikasi. |
 | Alur utama | 1. Pengguna mengisi judul, tanggal, mood, dan metrik harian. 2. Sistem memvalidasi tanggal/nilai. 3. Service menyimpan pada user. 4. View/API mengembalikan jurnal dengan entries. |
@@ -170,7 +170,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna |
+| Aktor | User |
 | Pemicu | Menambah, mengubah, atau menghapus entry dalam jurnal. |
 | Prasyarat | Jurnal induk dimiliki pengguna. |
 | Alur utama | 1. Pilih tipe dan isi. 2. Sistem membersihkan dan memvalidasi. 3. Service menyimpan content terenkripsi serta urutan. 4. Jurnal menampilkan entries terbaru. |
@@ -181,7 +181,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna |
+| Aktor | User |
 | Pemicu | Membuka daftar/dashboard jurnal dengan search/filter/periode. |
 | Prasyarat | Login dan email terverifikasi. |
 | Alur utama | 1. Sistem menerapkan filter pada jurnal user. 2. Data dipaginasi. 3. Dashboard service menghitung overview, histori, mood, dan tren periode. 4. UI menampilkan hasil/empty state. |
@@ -194,7 +194,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna |
+| Aktor | User |
 | Pemicu | Menyimpan level aktivitas, goal, diet, preferensi, dan target. |
 | Prasyarat | Login dan email terverifikasi; health profile diperlukan untuk kalkulasi otomatis penuh. |
 | Alur utama | 1. Sistem membersihkan daftar preferensi. 2. Validasi enum dan target 1200–4500. 3. Bila recalculate, target dihitung dari profil kesehatan dalam batas aman. 4. Satu `NutritionProfile` di-upsert. |
@@ -205,7 +205,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna |
+| Aktor | User |
 | Pemicu | Membuka `/nutrition` atau endpoint today/summary. |
 | Prasyarat | Login dan email terverifikasi. |
 | Alur utama | 1. Sistem mengambil profil, meal, dan item pada scope user. 2. Service menghitung kalori/makro, sisa target, jumlah meal, dan tren tujuh hari. 3. Hasil dirender/diubah menjadi JSON Resource. |
@@ -216,7 +216,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna |
+| Aktor | User |
 | Pemicu | Membuat, membuka, mengubah, atau menghapus meal. |
 | Prasyarat | Login dan email terverifikasi. |
 | Alur utama | 1. Isi tanggal, tipe meal, dan catatan. 2. Validasi tanggal tidak melebihi hari ini. 3. Service menyimpan meal milik user. 4. Total/ringkasan nutrisi disinkronkan. |
@@ -227,7 +227,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna |
+| Aktor | User |
 | Pemicu | Menambah, mengubah, atau menghapus item pada meal. |
 | Prasyarat | Meal induk dimiliki pengguna. |
 | Alur utama | 1. Isi nama, porsi, satuan, kalori, makro, dan sumber. 2. Validasi. 3. Service menyimpan perubahan. 4. Total meal dan daily summary dihitung ulang. |
@@ -238,7 +238,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna; Penyedia AI |
+| Aktor | User |
 | Pemicu | Mengunggah foto ke food analysis. |
 | Prasyarat | Login, email terverifikasi, file gambar valid, belum melewati rate limit. |
 | Alur utama | 1. File disimpan pada storage privat. 2. `FoodAnalysis` berstatus proses dibuat. 3. Provider menganalisis. 4. Hasil/confidence disimpan terenkripsi sebagai draf. 5. Pengguna diarahkan ke review. |
@@ -249,7 +249,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna |
+| Aktor | User |
 | Pemicu | Membuka draf lalu menekan konfirmasi atau batal. |
 | Prasyarat | Draf dimiliki user, belum dikonfirmasi/kedaluwarsa. |
 | Alur utama | 1. Sistem menampilkan image privat, hasil, confidence, dan warning. 2. Pengguna mengoreksi meal/item. 3. Validasi konfirmasi. 4. Service membuat meal/item dari nilai final. 5. Draf ditandai confirmed dan gambar ditangani sesuai retensi. |
@@ -260,7 +260,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna |
+| Aktor | User |
 | Pemicu | Membuka katalog dengan query/filter. |
 | Prasyarat | Login dan email terverifikasi. |
 | Alur utama | 1. Sistem membaca search, tipe meal, dan preferensi diet. 2. `HealthyMenuService` memfilter menu aktif. 3. Sistem menampilkan nutrien, bahan, cara, sumber, atribusi, dan rekomendasi sesuai profil. |
@@ -273,7 +273,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna |
+| Aktor | User |
 | Pemicu | Membuat, membuka, atau menghapus conversation. |
 | Prasyarat | Login dan email terverifikasi. |
 | Alur utama | 1. Pengguna membuat judul. 2. Service membuat conversation owner-scoped dengan judul terenkripsi. 3. Pengguna membuka message history atau menghapus conversation. |
@@ -284,7 +284,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna; Penyedia AI |
+| Aktor | User |
 | Pemicu | Mengirim pesan pada conversation. |
 | Prasyarat | Conversation dimiliki user; input valid; belum melewati throttle. |
 | Alur utama | 1. Pesan dibersihkan dan disimpan terenkripsi. 2. Sistem membentuk konteks minimum. 3. Provider diminta merespons. 4. Parser/safety service menolak diagnosis, resep, dosis, injection, atau output tidak aman. 5. Respons aman/fallback disimpan dan ditampilkan. |
@@ -295,7 +295,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna; Penyedia AI |
+| Aktor | User |
 | Pemicu | Mengirim uraian gejala. |
 | Prasyarat | Login, input 5–batas konfigurasi karakter, throttle tersedia. |
 | Alur utama | 1. Input dibersihkan. 2. Emergency detection deterministik berjalan sebelum provider. 3. Jika aman, provider memberi hasil terstruktur. 4. Schema dan medical safety divalidasi. 5. Sistem menampilkan summary, urgency, red flags, kategori, rekomendasi, confidence, dan batasan medis. |
@@ -306,7 +306,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna |
+| Aktor | User |
 | Pemicu | Membuka history/detail atau memilih hapus. |
 | Prasyarat | Assessment sebelumnya disimpan dan dimiliki user. |
 | Alur utama | 1. Sistem mengambil assessment user. 2. Hasil didekripsi untuk pemilik dan ditampilkan. 3. Bila hapus, policy dicek lalu record dihapus dan aksi diaudit. |
@@ -317,7 +317,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna |
+| Aktor | User |
 | Pemicu | Menekan simpan ke jurnal dan memberi konfirmasi eksplisit. |
 | Prasyarat | Assessment tersimpan, dimiliki user, belum ditautkan ke jurnal. |
 | Alur utama | 1. Sistem memerlukan `confirm=accepted`. 2. `AssessmentJournalService` membentuk jurnal/entries dari data assessment. 3. Assessment ditautkan ke jurnal dan waktu simpan dicatat. 4. Audit aman dibuat. |
@@ -330,7 +330,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna; Penyedia AI opsional |
+| Aktor | User |
 | Pemicu | Membuka halaman/endpoint insights. |
 | Prasyarat | Login, email terverifikasi, periode valid (7/30/90), throttle AI tersedia bila dipakai. |
 | Alur utama | 1. Service menghitung overview aktual. 2. Rule engine menghasilkan insight non-diagnostik. 3. Konteks agregat minimum dapat dikirim ke provider. 4. Output terstruktur divalidasi/safety-checked dan di-cache per user. 5. UI menampilkan insight aman. |
@@ -341,7 +341,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna |
+| Aktor | User |
 | Pemicu | Memilih periode atau endpoint trends/weekly. |
 | Prasyarat | Login; periode termasuk 7, 30, atau 90 hari. |
 | Alur utama | 1. Sistem mengambil BMI, jurnal, meal, dan goal milik user. 2. Menghitung seri berat/BMI, kalori, makro, frekuensi jurnal, mood, dan perbandingan mingguan. 3. Hasil ditampilkan sebagai grafik/ringkasan. |
@@ -352,7 +352,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna |
+| Aktor | User |
 | Pemicu | Membuat, melihat daftar, mengubah, atau menghapus goal. |
 | Prasyarat | Login dan email terverifikasi. |
 | Alur utama | 1. Pilih tipe, target, tanggal, status. 2. Sistem memvalidasi rentang spesifik tipe. 3. Goal owner-scoped disimpan. 4. Progress service membaca nilai aktual dari BMI/meal/jurnal dan menampilkan progres. |
@@ -363,7 +363,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna; Penyedia AI opsional |
+| Aktor | User |
 | Pemicu | Membuka health plan/today atau menekan generate. |
 | Prasyarat | Login dan email terverifikasi; tanggal valid; user memiliki data minimum untuk personalisasi terbaik. |
 | Alur utama | 1. Sistem mencari satu plan user/tanggal. 2. Generator deterministik membaca profil, nutrisi, meal, jurnal, BMI, dan goal. 3. Task terkontrol dibuat/disinkronkan tanpa duplikasi. 4. Progress dihitung server. 5. Provider opsional hanya memperhalus wording/motivasi yang aman. |
@@ -374,7 +374,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna |
+| Aktor | User |
 | Pemicu | Menekan complete/uncomplete. |
 | Prasyarat | Task berada pada plan milik user dan completion mode mengizinkan aksi manual. |
 | Alur utama | 1. Form Request/policy memverifikasi owner dan melarang field terhitung. 2. Service mengubah status/timestamp task manual. 3. Source-derived tasks disinkronkan. 4. Progress dan status plan dihitung ulang. |
@@ -387,7 +387,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna |
+| Aktor | User |
 | Pemicu | Membuka daftar/unread count atau menandai read/read-all. |
 | Prasyarat | Login dan email terverifikasi; notifikasi dimiliki user. |
 | Alur utama | 1. Sistem memfilter tipe/unread dan memaginasi. 2. Pengguna membuka item. 3. Sistem mengisi `read_at` untuk item atau semua item user. 4. Badge dihitung ulang. |
@@ -398,7 +398,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna |
+| Aktor | User |
 | Pemicu | Menyimpan switch kategori, reminder time, dan quiet hours. |
 | Prasyarat | Login dan email terverifikasi. |
 | Alur utama | 1. Service mengambil/membuat satu preference row. 2. Pengguna memilih master/category switches dan waktu. 3. Sistem memvalidasi pasangan quiet hours dan format `H:i`. 4. Preference di-update. |
@@ -409,7 +409,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Scheduler/Queue Worker |
+| Aktor | User |
 | Pemicu | Jadwal aplikasi menjalankan command reminder/delivery. |
 | Prasyarat | Worker/scheduler aktif; preference user mengizinkan tipe dan waktu. |
 | Alur utama | 1. Command memproses user dalam chunk. 2. `ReminderService` mengecek data aktual untuk jurnal, meal, plan, goal, weekly insight, dan wellness. 3. `NotificationService` membuat record dengan deduplication key. 4. Job mengirim saat di luar quiet hours. 5. `delivered_at` diisi atomik. |
@@ -420,7 +420,7 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Pengguna; Reverb/Client |
+| Aktor | User |
 | Pemicu | Notifikasi eligible selesai dikirim. |
 | Prasyarat | Channel privat terotorisasi dan client Echo terkoneksi. |
 | Alur utama | 1. Sistem broadcast `NotificationCreated` dengan payload minimum. 2. Client privat menerima event. 3. Badge/dropdown diperbarui dan toast non-blocking muncul. |
@@ -442,11 +442,11 @@
 
 | Elemen | Deskripsi |
 | --- | --- |
-| Aktor | Sistem |
+| Aktor | User, Admin |
 | Pemicu | Aksi penting controller/service yang diaudit. |
 | Prasyarat | Request/action context tersedia. |
 | Alur utama | 1. Sistem menentukan aktor, aksi, subject, dan metadata whitelist. 2. Alamat IP di-hash. 3. User agent dan waktu dicatat. 4. Isi kesehatan, token, dan credential tidak dimasukkan. |
-| Alternatif | Aktor dapat null untuk aksi sistem; subject polymorphic dapat sudah terhapus tetapi jejak tetap berguna. |
+| Alternatif | `actor_id` dapat null untuk aksi sistem; subject polymorphic dapat sudah terhapus tetapi jejak tetap berguna. |
 | Pascakondisi | `AuditLog` append-only tercipta tanpa `updated_at`. |
 
 ## Relasi include/extend utama
