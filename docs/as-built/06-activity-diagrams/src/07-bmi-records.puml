@@ -1,0 +1,52 @@
+@startuml
+title AD-07 — Menghitung dan Mengelola Riwayat BMI
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam activityBorderColor #059669
+skinparam activityBackgroundColor #ECFDF5
+skinparam ArrowColor #334155
+
+|#E8F4FF|User|
+start
+:Buka kalkulator BMI;
+:Masukkan tinggi, berat, waktu ukur,\ndan opsi sinkron profil;
+
+|#ECFDF5|HEALO Application|
+:Validasi rentang input;
+if (Valid?) then (Tidak)
+  :Tampilkan validation errors;
+  stop
+else (Ya)
+  :Hitung BMI dan kategori server-side;
+endif
+
+|#FFF7E6|Database|
+:Simpan BmiRecord milik User;
+if (Sinkronkan profil?) then (Ya)
+  :Perbarui tinggi dan berat HealthProfile;
+else (Tidak)
+endif
+
+|#ECFDF5|HEALO Application|
+:Bangun histori dan grafik BMI;
+
+|#E8F4FF|User|
+:Lihat hasil;
+if (Hapus record?) then (Ya)
+  :Pilih record;
+  |#ECFDF5|HEALO Application|
+  :Periksa ownership / policy;
+  if (Milik User?) then (Tidak)
+    :Tolak akses;
+  else (Ya)
+    |#FFF7E6|Database|
+    :Hapus record dan simpan audit;
+    |#ECFDF5|HEALO Application|
+    :Tampilkan histori terbaru;
+  endif
+else (Tidak)
+endif
+stop
+@enduml
+

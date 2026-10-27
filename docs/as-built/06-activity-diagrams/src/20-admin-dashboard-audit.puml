@@ -1,0 +1,46 @@
+@startuml
+title AD-20 — Dashboard Admin dan Audit Operasional
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam activityBorderColor #7C3AED
+skinparam activityBackgroundColor #F5F3FF
+skinparam ArrowColor #334155
+
+|#F3E8FF|Admin|
+start
+:Login dan buka dashboard Admin;
+
+|#ECFDF5|HEALO Application|
+:Validasi session, verified, dan role admin;
+if (Role Admin valid?) then (Tidak)
+  :Tolak akses / redirect;
+  stop
+else (Ya)
+endif
+
+|#FFF7E6|Database|
+:Hitung total User, User baru,\ndan audit event 24 jam;
+
+|#ECFDF5|HEALO Application|
+:Bangun statistik agregat;
+note right
+  Tidak membaca konten kesehatan privat
+  dan tidak memberi bypass ownership.
+end note
+
+|#F3E8FF|Admin|
+:Lihat dashboard agregat;
+
+|#ECFDF5|HEALO Application|
+if (Ada aksi yang diaudit?) then (Ya)
+  :Pilih action, actor, subject ID,\ndan metadata aman;
+  :Hash IP dan potong user agent;
+  :Buang konten kesehatan dari metadata;
+  |#FFF7E6|Database|
+  :Simpan AuditLog append-only;
+else (Tidak)
+endif
+stop
+@enduml
+

@@ -1,0 +1,69 @@
+@startuml
+title AD-19 — Preferensi, Reminder, Durable Notification, dan Realtime
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam activityBorderColor #4F46E5
+skinparam activityBackgroundColor #EEF2FF
+skinparam ArrowColor #334155
+
+|#E8F4FF|User|
+start
+:Atur master toggle, kategori,\nreminder time, dan quiet hours;
+
+|#ECFDF5|HEALO Application|
+:Validasi waktu dan kombinasi preferensi;
+|#FFF7E6|Database|
+:Upsert satu NotificationPreference per User;
+
+|#F3E8FF|Scheduler / Queue / Realtime|
+:Scheduler memilih User secara chunk;
+:Queue SendWellnessReminderJob;
+
+|#ECFDF5|HEALO Application|
+:Muat preference dan data kesehatan aktual;
+if (Master / kategori aktif?) then (Tidak)
+  :Lewati reminder;
+  stop
+else (Ya)
+endif
+if (Reminder diperlukan dan belum duplikat?) then (Tidak)
+  :Tidak membuat notification baru;
+  stop
+else (Ya)
+endif
+if (Sedang quiet hours?) then (Ya)
+  :Set available_at setelah quiet hours;
+else (Tidak)
+  :Set tersedia sekarang;
+endif
+
+|#FFF7E6|Database|
+:Simpan UserNotification durable\ndengan deduplication key;
+
+|#F3E8FF|Scheduler / Queue / Realtime|
+:Delivery command klaim record due;
+
+|#FFF7E6|Database|
+:Isi delivered_at secara atomik;
+
+|#F3E8FF|Scheduler / Queue / Realtime|
+:Broadcast event ke private user channel;
+if (Client realtime terhubung?) then (Ya)
+  |#E8F4FF|User|
+  :Terima badge / toast;
+else (Tidak)
+  |#ECFDF5|HEALO Application|
+  :Pertahankan record durable;
+endif
+
+|#E8F4FF|User|
+:Buka notification center;
+:Filter, tandai baca, read-all,\natau hapus notification;
+|#ECFDF5|HEALO Application|
+:Periksa ownership dan update read state;
+|#FFF7E6|Database|
+:Simpan perubahan dan hitung unread count;
+stop
+@enduml
+

@@ -1,0 +1,78 @@
+@startuml
+title AD-11 — Scan Makanan, Review Label Nutrisi, dan Konfirmasi
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam activityBorderColor #D97706
+skinparam activityBackgroundColor #FFFBEB
+skinparam ArrowColor #334155
+
+|#E8F4FF|User|
+start
+:Pilih / unggah foto makanan;
+
+|#ECFDF5|HEALO Application|
+:Validasi MIME, ukuran, dan throttle 5/menit;
+if (File valid dan limit tersedia?) then (Tidak)
+  :Tampilkan error upload / throttle;
+  stop
+else (Ya)
+  :Simpan foto privat per User;
+endif
+
+|#FFF7E6|Database|
+:Buat FoodAnalysis status=processing;
+
+|#F3E8FF|Food Analysis Provider|
+:Deteksi makanan, porsi, kalori,\nprotein, karbohidrat, dan lemak;
+
+|#ECFDF5|HEALO Application|
+:Parse dan validasi schema provider;
+if (Provider / schema berhasil?) then (Tidak)
+  :Hapus foto dan catat warning aman;
+  |#FFF7E6|Database|
+  :Tandai analysis failed;
+  |#ECFDF5|HEALO Application|
+  :Tampilkan gagal tanpa membuat Meal;
+  stop
+else (Ya)
+  |#FFF7E6|Database|
+  :Simpan result terenkripsi, confidence,\nprovider, expiry, status=review;
+endif
+
+|#ECFDF5|HEALO Application|
+:Tampilkan foto dan setiap nilai dengan label:\nnama, porsi, satuan, kalori, protein,\nkarbohidrat, lemak, dan confidence;
+
+|#E8F4FF|User|
+:Periksa dan koreksi setiap nilai;
+:Pilih tanggal dan jenis makan;
+if (Batalkan draft?) then (Ya)
+  |#ECFDF5|HEALO Application|
+  :Periksa ownership;
+  |#FFF7E6|Database|
+  :Hapus record dan foto privat;
+  stop
+else (Konfirmasi)
+endif
+
+|#ECFDF5|HEALO Application|
+:Validasi owner, status review, tanggal,\n1–20 item, porsi, satuan, dan range nutrisi;
+if (Seluruh nilai valid?) then (Tidak)
+  :Kembali ke review dengan error berlabel;
+  stop
+else (Ya)
+endif
+
+|#FFF7E6|Database|
+:Mulai transaction;
+:Buat Meal dan MealItem\ndari nilai final terkoreksi;
+:Refresh NutritionDailySummary;
+:Tandai analysis confirmed;
+:Simpan audit dan commit;
+:Hapus foto privat;
+
+|#ECFDF5|HEALO Application|
+:Buka Meal terkonfirmasi;
+stop
+@enduml
+

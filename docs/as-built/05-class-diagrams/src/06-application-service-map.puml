@@ -1,0 +1,110 @@
+@startuml
+!pragma layout smetana
+title HEALO — Application Service & Provider Dependency Map
+left to right direction
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam defaultFontName Arial
+skinparam classAttributeIconSize 0
+skinparam classBorderColor #475569
+skinparam classBackgroundColor #FFFFFF
+skinparam ArrowColor #334155
+hide empty members
+
+package "Health & BMI" #ECFDF5 {
+  class HealthProfileService
+  class BmiCalculator
+  class BmiRecordService
+}
+
+package "Journal" #F0FDFA {
+  class HealthJournalService
+  class HealthJournalEntryService
+  class HealthJournalDashboardService
+}
+
+package "Nutrition" #FFF7E6 {
+  class CalorieTargetService
+  class NutritionProfileService
+  class MealService
+  class MealItemService
+  class NutritionSummaryService
+  class FoodAnalysisService
+  class HealthyMenuService
+  class GroqFoodAnalysisProvider <<provider>>
+  class LocalDemoFoodAnalysisProvider <<provider>>
+}
+
+package "Health AI" #F3E8FF {
+  class HealthAssistantService
+  class SymptomAssessmentService
+  class AssessmentJournalService
+  class HealthAIContextService
+  class HealthAIResponseParser
+  class EmergencyDetectionService
+  class MedicalSafetyService
+  class SymptomAssessmentPrompt
+  class GroqHealthAIProvider <<provider>>
+  class LocalDemoHealthAIProvider <<provider>>
+}
+
+package "Insights" #E6FFFB {
+  class DashboardHealthService
+  class HealthInsightsService
+  class HealthInsightsContextService
+  class HealthInsightsAIParser
+  class HealthGoalService
+}
+
+package "Health Plan" #E8F4FF {
+  class HealthPlanService
+  class HealthPlanGenerator
+  class HealthPlanProgressService
+  class HealthPlanPersonalizationService
+}
+
+package "Notification & Audit" #EEF2FF {
+  class NotificationPreferenceService
+  class NotificationService
+  class ReminderService
+  class AuditLogService
+}
+
+package "Contracts" #FEF3C7 {
+  interface FoodAnalysisProviderInterface
+  interface HealthAIProviderInterface
+}
+
+BmiRecordService --> BmiCalculator
+AssessmentJournalService --> HealthJournalService
+FoodAnalysisService --> FoodAnalysisProviderInterface
+GroqFoodAnalysisProvider ..|> FoodAnalysisProviderInterface
+LocalDemoFoodAnalysisProvider ..|> FoodAnalysisProviderInterface
+HealthAssistantService --> HealthAIProviderInterface
+SymptomAssessmentService --> HealthAIProviderInterface
+HealthInsightsService --> HealthAIProviderInterface
+HealthPlanPersonalizationService --> HealthAIProviderInterface
+GroqHealthAIProvider ..|> HealthAIProviderInterface
+LocalDemoHealthAIProvider ..|> HealthAIProviderInterface
+DashboardHealthService --> NutritionSummaryService
+DashboardHealthService --> HealthPlanService
+ReminderService --> NotificationService
+
+note bottom of FoodAnalysisProviderInterface
+  Food provider memiliki kontrak terpisah
+  dari Health AI provider.
+end note
+
+note bottom of AuditLogService
+  Tidak memiliki repository layer khusus;
+  service menulis model Eloquent AuditLog.
+end note
+
+legend bottom
+  Diagram memuat seluruh 38 class pada app/Services.
+  Panah hanya menunjukkan dependency lintas kelompok yang paling penting.
+  Dependency internal rinci tersedia pada diagram domain 01–05.
+endlegend
+@enduml
+

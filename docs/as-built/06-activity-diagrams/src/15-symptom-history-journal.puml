@@ -1,0 +1,61 @@
+@startuml
+title AD-15 — Riwayat Assessment dan Simpan ke Jurnal
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam activityBorderColor #7C3AED
+skinparam activityBackgroundColor #F5F3FF
+skinparam ArrowColor #334155
+
+|#E8F4FF|User|
+start
+:Buka history assessment;
+
+|#FFF7E6|Database|
+:Ambil assessment tersimpan milik User;
+
+|#ECFDF5|HEALO Application|
+if (History kosong?) then (Ya)
+  :Tampilkan empty state;
+  stop
+else (Tidak)
+  :Tampilkan daftar terpaginasikan;
+endif
+
+|#E8F4FF|User|
+:Pilih assessment;
+
+|#ECFDF5|HEALO Application|
+:Periksa ownership / policy;
+if (Milik User?) then (Tidak)
+  :Tolak akses;
+  stop
+else (Ya)
+  :Tampilkan detail terdekripsi;
+endif
+
+|#E8F4FF|User|
+if (Hapus assessment?) then (Ya)
+  |#FFF7E6|Database|
+  :Simpan audit aman dan hapus assessment;
+  stop
+elseif (Simpan ke jurnal?) then (Ya)
+  :Berikan konfirmasi eksplisit\ndan optional title;
+  |#ECFDF5|HEALO Application|
+  :Validasi confirm dan title;
+  if (Sudah memiliki journal?) then (Ya)
+    |#FFF7E6|Database|
+    :Ambil journal yang sama;
+  else (Tidak)
+    :Mulai transaction;
+    :Buat HealthJournal dan entries terenkripsi\ndari complaint, symptoms, summary, recommendation;
+    :Isi health_journal_id\ndan saved_to_journal_at;
+    :Simpan audit dan commit;
+  endif
+  |#ECFDF5|HEALO Application|
+  :Buka jurnal;
+else (Lihat saja)
+endif
+stop
+@enduml
+

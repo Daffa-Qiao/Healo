@@ -1,0 +1,58 @@
+@startuml
+title AD-04 — Profil Akun, Bahasa, dan Penghapusan Akun
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam activityBorderColor #0284C7
+skinparam activityBackgroundColor #F0F9FF
+skinparam ArrowColor #334155
+
+|#E8F4FF|User|
+start
+:Buka pengaturan akun;
+:Pilih aksi;
+
+|#ECFDF5|HEALO Application|
+if (Ubah profil?) then (Ya)
+  |#E8F4FF|User|
+  :Ubah nama atau email;
+  |#ECFDF5|HEALO Application|
+  :Validasi data dan keunikan email;
+  if (Valid?) then (Ya)
+    |#FFF7E6|Database|
+    :Simpan profil;
+    if (Email berubah?) then (Ya)
+      :Kosongkan email_verified_at;
+    else (Tidak)
+    endif
+    :Simpan audit perubahan akun;
+  else (Tidak)
+    |#ECFDF5|HEALO Application|
+    :Tampilkan validation errors;
+  endif
+elseif (Ubah bahasa?) then (Ya)
+  |#E8F4FF|User|
+  :Pilih id atau en;
+  |#ECFDF5|HEALO Application|
+  :Validasi locale;
+  |#FFF7E6|Database|
+  :Simpan locale pada User;
+  |#ECFDF5|HEALO Application|
+  :Aktifkan locale dan redirect kembali;
+else (Hapus akun)
+  |#E8F4FF|User|
+  :Masukkan password sebagai konfirmasi;
+  |#ECFDF5|HEALO Application|
+  if (Password benar?) then (Tidak)
+    :Tolak penghapusan;
+  else (Ya)
+    |#FFF7E6|Database|
+    :Simpan audit penghapusan;
+    :Soft-delete User;
+    |#ECFDF5|HEALO Application|
+    :Logout dan invalidasi session;
+  endif
+endif
+stop
+@enduml
+

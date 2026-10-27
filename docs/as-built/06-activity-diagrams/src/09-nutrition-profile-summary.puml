@@ -1,0 +1,52 @@
+@startuml
+title AD-09 — Profil, Target, dan Ringkasan Nutrisi
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam activityBorderColor #D97706
+skinparam activityBackgroundColor #FFFBEB
+skinparam ArrowColor #334155
+
+|#E8F4FF|User|
+start
+:Buka dashboard nutrisi;
+
+|#FFF7E6|Database|
+:Ambil NutritionProfile milik User;
+
+|#ECFDF5|HEALO Application|
+if (Profil nutrisi tersedia?) then (Tidak)
+  |#E8F4FF|User|
+  :Isi aktivitas, goal, diet,\npreferensi, dan mode target;
+  |#ECFDF5|HEALO Application|
+  :Validasi input;
+  if (Target dihitung otomatis?) then (Ya)
+    |#FFF7E6|Database|
+    :Ambil HealthProfile;
+    |#ECFDF5|HEALO Application|
+    if (Data kesehatan cukup?) then (Tidak)
+      :Minta User melengkapi HealthProfile;
+      stop
+    else (Ya)
+      :Hitung BMR, activity factor,\ndan goal adjustment;
+    endif
+  else (Tidak)
+    :Gunakan target manual tervalidasi;
+  endif
+  |#FFF7E6|Database|
+  :Upsert NutritionProfile;
+else (Ya)
+endif
+
+|#ECFDF5|HEALO Application|
+:Refresh daily summary dari meal aktual;
+|#FFF7E6|Database|
+:Upsert summary unik per User + tanggal;
+:Ambil tujuh summary terakhir;
+|#ECFDF5|HEALO Application|
+:Hitung consumed, remaining, meals logged,\ndan statistik mingguan;
+|#E8F4FF|User|
+:Lihat ringkasan berlabel dan progress;
+stop
+@enduml
+

@@ -1,0 +1,56 @@
+@startuml
+title AD-13 — Percakapan Healbot dengan Safety Boundary
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam activityBorderColor #7C3AED
+skinparam activityBackgroundColor #F5F3FF
+skinparam ArrowColor #334155
+
+|#E8F4FF|User|
+start
+:Buat / pilih conversation milik sendiri;
+:Masukkan pesan;
+
+|#ECFDF5|HEALO Application|
+:Validasi ownership, isi, dan throttle;
+if (Valid?) then (Tidak)
+  :Tampilkan error tanpa memproses pesan;
+  stop
+else (Ya)
+endif
+:Periksa emergency, self-harm, diagnosis,\ndosis, dan prompt injection;
+if (Safety response lokal diperlukan?) then (Ya)
+  :Bentuk jawaban boundary / emergency lokal;
+else (Tidak)
+  :Bangun minimized context\ndan recent history terbatas;
+  |#F3E8FF|Health AI Provider|
+  :Hasilkan respons terstruktur;
+  |#ECFDF5|HEALO Application|
+  :Parse schema dan periksa output;
+  if (Provider gagal atau output unsafe?) then (Ya)
+    :Gunakan fallback aman;
+  else (Tidak)
+    :Gunakan respons tervalidasi;
+  endif
+endif
+
+|#FFF7E6|Database|
+:Dalam transaction, simpan pesan User\ndan jawaban Assistant terenkripsi;
+:Perbarui last_message_at dan title bila perlu;
+
+|#ECFDF5|HEALO Application|
+:Tampilkan jawaban dan disclaimer;
+
+|#E8F4FF|User|
+if (Hapus conversation?) then (Ya)
+  |#ECFDF5|HEALO Application|
+  :Periksa ownership;
+  |#FFF7E6|Database|
+  :Hapus conversation beserta messages;
+  :Simpan audit tanpa isi percakapan;
+else (Tidak)
+endif
+stop
+@enduml
+

@@ -25,11 +25,11 @@ rectangle "HEALO" #FFFFFF {
   }
 }
 
-USER --> AST01
-USER --> AST02
-USER --> SYM01
-USER --> SYM02
-USER --> SYM03
+USER -- AST01
+USER -- AST02
+USER -- SYM01
+USER -- SYM02
+USER -- SYM03
 
 SYM03 ..> SYM02 : <<extend>>\n[assessment tersimpan]
 

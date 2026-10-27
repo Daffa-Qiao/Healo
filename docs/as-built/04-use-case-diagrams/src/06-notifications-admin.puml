@@ -25,10 +25,10 @@ rectangle "HEALO" #FFFFFF {
   }
 }
 
-USER --> NOT01
-USER --> NOT02
-USER --> NOT03
-ADMIN --> ADM01
+USER -- NOT01
+USER -- NOT02
+USER -- NOT03
+ADM01 -- ADMIN
 
 note right of NOT03
   Scheduler, queue, quiet-hour delivery,

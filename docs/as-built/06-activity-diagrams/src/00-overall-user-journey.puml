@@ -1,0 +1,56 @@
+@startuml
+title AD-00 — Alur Keseluruhan HEALO (As-Built)
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam activityBorderColor #2563EB
+skinparam activityBackgroundColor #EFF6FF
+skinparam ArrowColor #334155
+
+|#E8F4FF|User|
+start
+:Buka HEALO;
+if (Sudah memiliki akun?) then (Tidak)
+  :Registrasi dan verifikasi email;
+else (Ya)
+endif
+:Login;
+
+|#ECFDF5|HEALO Application|
+:Validasi session, verifikasi email,\ndan owner scope;
+if (Akses valid?) then (Tidak)
+  :Tampilkan error / arahkan ke autentikasi;
+  stop
+else (Ya)
+endif
+
+|#E8F4FF|User|
+:Pilih fitur kesehatan;
+
+|#ECFDF5|HEALO Application|
+if (Fitur memerlukan AI?) then (Ya)
+  :Validasi input dan jalankan safety gate;
+  |#F3E8FF|AI Provider|
+  :Proses permintaan terstruktur;
+  |#ECFDF5|HEALO Application|
+  :Parse, validasi, atau gunakan fallback;
+else (Tidak)
+  :Jalankan layanan domain;
+endif
+
+|#FFF7E6|Database|
+:Baca / simpan data owner-scoped;
+
+|#ECFDF5|HEALO Application|
+:Bangun hasil, insight, atau ringkasan;
+
+|#E8F4FF|User|
+:Tinjau hasil;
+if (Pilih fitur lain?) then (Ya)
+  :Kembali ke dashboard;
+else (Tidak)
+  :Logout / tutup aplikasi;
+endif
+stop
+@enduml
+

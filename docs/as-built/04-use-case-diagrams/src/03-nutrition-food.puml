@@ -33,15 +33,15 @@ rectangle "HEALO" #FFFFFF {
   }
 }
 
-USER --> NUT01
-USER --> NUT02
-USER --> MEAL01
-USER --> MEAL02
-USER --> FOOD01
-USER --> FOOD02
-USER --> FOOD03
-USER --> MENU01
-USER --> MENU02
+USER -- NUT01
+USER -- NUT02
+USER -- MEAL01
+USER -- MEAL02
+USER -- FOOD01
+USER -- FOOD02
+USER -- FOOD03
+USER -- MENU01
+USER -- MENU02
 
 MEAL02 ..> MEAL01 : <<extend>>\n[kelola item]
 FOOD02 ..> FOOD01 : <<extend>>\n[draft siap direview]

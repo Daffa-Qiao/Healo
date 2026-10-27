@@ -1,0 +1,148 @@
+@startuml
+!pragma layout smetana
+title HEALO — Account, Health Profile, BMI & Journal Classes
+left to right direction
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam defaultFontName Arial
+skinparam classAttributeIconSize 0
+skinparam ArrowColor #334155
+hide empty members
+
+package "Domain Models" #ECFDF5 {
+  class User <<Eloquent>> {
+    +id: bigint
+    +name: string
+    +email: string
+    +role: UserRole
+    +locale: string
+    +email_verified_at: datetime?
+    +deleted_at: datetime?
+    +isAdmin(): bool
+    +healthProfile(): HasOne
+    +bmiRecords(): HasMany
+    +healthJournals(): HasMany
+  }
+
+  class HealthProfile <<Eloquent>> {
+    +id: bigint
+    +user_id: bigint
+    +height_cm: decimal?
+    +weight_kg: decimal?
+    +birth_date: date?
+    +gender: Gender?
+    +activity_level: ActivityLevel?
+    +health_goal: HealthGoal?
+    +health_conditions: array? [enc]
+    +allergies: array? [enc]
+    +consented_at: datetime?
+    +user(): BelongsTo
+  }
+
+  class BmiRecord <<Eloquent>> {
+    +id: bigint
+    +user_id: bigint
+    +height_cm: decimal
+    +weight_kg: decimal
+    +bmi: decimal [derived]
+    +category: BmiCategory [derived]
+    +measured_at: datetime
+    +user(): BelongsTo
+  }
+
+  class HealthJournal <<Eloquent>> {
+    +id: bigint
+    +user_id: bigint
+    +title: string
+    +journal_date: date
+    +mood: Mood?
+    +weight_kg: decimal?
+    +systolic: int?
+    +diastolic: int?
+    +sleep_hours: decimal?
+    +water_liters: decimal?
+    +exercise_minutes: int?
+    +deleted_at: datetime?
+    +entries(): HasMany
+    +entryContent(type): string?
+    +symptomList(): array
+  }
+
+  class HealthJournalEntry <<Eloquent>> {
+    +id: bigint
+    +health_journal_id: bigint
+    +type: JournalEntryType
+    +content: string [enc]
+    +sort_order: int
+    +journal(): BelongsTo
+  }
+}
+
+package "Application Services" #E8F4FF {
+  class HealthProfileService {
+    +update(user, data): HealthProfile
+  }
+  class BmiCalculator {
+    +calculate(weightKg, heightCm): BmiResult
+  }
+  class BmiRecordService {
+    +record(user, data): BmiRecord
+  }
+  class HealthJournalService {
+    +create(user, data): HealthJournal
+    +update(journal, data): HealthJournal
+  }
+  class HealthJournalEntryService {
+    +create(journal, data): HealthJournalEntry
+    +update(entry, data): HealthJournalEntry
+  }
+  class HealthJournalDashboardService {
+    +build(user, period = 14): array
+  }
+}
+
+package "Value Objects & Enums" #FFF7E6 {
+  class BmiResult <<readonly>> {
+    +value: float
+    +category: BmiCategory
+  }
+  enum UserRole
+  enum Gender
+  enum ActivityLevel
+  enum HealthGoal
+  enum BmiCategory
+  enum Mood
+  enum JournalEntryType
+}
+
+User "1" -- "0..1" HealthProfile
+User "1" -- "0..*" BmiRecord
+User "1" -- "0..*" HealthJournal
+HealthJournal "1" *-- "0..*" HealthJournalEntry
+
+HealthProfileService ..> HealthProfile : writes
+BmiRecordService --> BmiCalculator
+BmiCalculator ..> BmiResult : returns
+BmiRecordService ..> BmiRecord : creates
+BmiRecordService ..> HealthProfile : optionally updates
+HealthJournalService ..> HealthJournal : writes
+HealthJournalService ..> HealthJournalEntry : synchronizes
+HealthJournalEntryService ..> HealthJournalEntry : writes
+HealthJournalDashboardService ..> HealthJournal : aggregates
+HealthJournalDashboardService ..> BmiRecord : reads
+
+User ..> UserRole
+HealthProfile ..> Gender
+HealthProfile ..> ActivityLevel
+HealthProfile ..> HealthGoal
+BmiRecord ..> BmiCategory
+HealthJournal ..> Mood
+HealthJournalEntry ..> JournalEntryType
+
+legend bottom
+  [enc] = Eloquent encrypted cast; [derived] = dihitung server-side.
+  Operasi yang ditampilkan adalah public operation penting, bukan seluruh framework API.
+endlegend
+@enduml
+

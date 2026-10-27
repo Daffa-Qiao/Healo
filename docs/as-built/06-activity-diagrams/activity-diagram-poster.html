@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HEALO — Activity Diagram Poster</title>
+  <style>
+    :root { --navy:#123a63; --teal:#079b8c; --line:#cbd5e1; --paper:#f8fafc; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--paper); color:#0f172a; font-family:Arial,sans-serif; }
+    header { padding:28px 34px 20px; background:#fff; border-bottom:3px solid var(--teal); }
+    h1 { margin:0; color:var(--navy); font-size:32px; }
+    header p { margin:6px 0 0; color:#475569; }
+    main { padding:22px; }
+    .domain { margin:0 0 26px; }
+    .domain h2 { color:var(--navy); margin:0 0 12px; font-size:20px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(520px,1fr)); gap:16px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden; box-shadow:0 2px 8px #0f172a12; }
+    article h3 { margin:0; padding:12px 16px; color:var(--navy); font-size:16px; border-bottom:1px solid var(--line); }
+    article img { display:block; width:100%; height:560px; object-fit:contain; background:#f8fafc; }
+    footer { margin:0 22px 22px; padding:16px 20px; background:#fff; border:1px solid var(--line); border-radius:12px; color:#475569; }
+    .legend { display:flex; flex-wrap:wrap; gap:16px; }
+    .legend span::before { content:""; display:inline-block; width:14px; height:14px; margin-right:6px; border-radius:3px; vertical-align:-2px; }
+    .user::before { background:#e8f4ff; } .app::before { background:#ecfdf5; }
+    .db::before { background:#fff7e6; } .external::before { background:#f3e8ff; }
+    @media print { article { break-inside:avoid; } .grid { grid-template-columns:1fr 1fr; } }
+  </style>
+</head>
+<body>
+  <header><h1>HEALO — Activity Diagrams</h1><p>As-built standalone health & wellness application · Swimlane workflows</p></header>
+  <main>
+    <section class="domain"><h2>Overview & Account</h2><div class="grid">
+      <article><h3>AD-00 · Alur Keseluruhan</h3><img src="rendered/00-overall-user-journey.svg" alt="AD-00"></article>
+      <article><h3>AD-01 · Registrasi & Verifikasi</h3><img src="rendered/01-registration-verification.svg" alt="AD-01"></article>
+      <article><h3>AD-02 · Login & Logout</h3><img src="rendered/02-login-logout.svg" alt="AD-02"></article>
+      <article><h3>AD-03 · Password</h3><img src="rendered/03-password-recovery-change.svg" alt="AD-03"></article>
+      <article><h3>AD-04 · Akun & Preferensi</h3><img src="rendered/04-account-preferences-deletion.svg" alt="AD-04"></article>
+    </div></section>
+    <section class="domain"><h2>Personal Health Records</h2><div class="grid">
+      <article><h3>AD-05 · Dashboard User</h3><img src="rendered/05-health-dashboard.svg" alt="AD-05"></article>
+      <article><h3>AD-06 · Health Profile</h3><img src="rendered/06-health-profile.svg" alt="AD-06"></article>
+      <article><h3>AD-07 · BMI</h3><img src="rendered/07-bmi-records.svg" alt="AD-07"></article>
+      <article><h3>AD-08 · Journal</h3><img src="rendered/08-health-journal.svg" alt="AD-08"></article>
+    </div></section>
+    <section class="domain"><h2>Nutrition & Food</h2><div class="grid">
+      <article><h3>AD-09 · Nutrition Profile & Summary</h3><img src="rendered/09-nutrition-profile-summary.svg" alt="AD-09"></article>
+      <article><h3>AD-10 · Meal Tracking</h3><img src="rendered/10-meal-tracking.svg" alt="AD-10"></article>
+      <article><h3>AD-11 · Food Analysis & Review</h3><img src="rendered/11-food-analysis-review-confirm.svg" alt="AD-11"></article>
+      <article><h3>AD-12 · Healthy Menu</h3><img src="rendered/12-healthy-menu.svg" alt="AD-12"></article>
+    </div></section>
+    <section class="domain"><h2>Health AI</h2><div class="grid">
+      <article><h3>AD-13 · Healbot</h3><img src="rendered/13-healbot-conversation.svg" alt="AD-13"></article>
+      <article><h3>AD-14 · Symptom Assessment</h3><img src="rendered/14-symptom-assessment.svg" alt="AD-14"></article>
+      <article><h3>AD-15 · Assessment History & Journal</h3><img src="rendered/15-symptom-history-journal.svg" alt="AD-15"></article>
+    </div></section>
+    <section class="domain"><h2>Insights, Goals & Daily Plan</h2><div class="grid">
+      <article><h3>AD-16 · Health Insights</h3><img src="rendered/16-health-insights.svg" alt="AD-16"></article>
+      <article><h3>AD-17 · Health Goals</h3><img src="rendered/17-health-goals.svg" alt="AD-17"></article>
+      <article><h3>AD-18 · Daily Health Plan</h3><img src="rendered/18-daily-health-plan.svg" alt="AD-18"></article>
+    </div></section>
+    <section class="domain"><h2>Notification & Administration</h2><div class="grid">
+      <article><h3>AD-19 · Notification Lifecycle</h3><img src="rendered/19-notification-lifecycle.svg" alt="AD-19"></article>
+      <article><h3>AD-20 · Admin Dashboard & Audit</h3><img src="rendered/20-admin-dashboard-audit.svg" alt="AD-20"></article>
+    </div></section>
+  </main>
+  <footer><div class="legend"><span class="user">User/Admin</span><span class="app">HEALO Application</span><span class="db">Database</span><span class="external">Provider / Mail / Queue / Realtime</span></div></footer>
+</body>
+</html>
+

@@ -1,0 +1,140 @@
+@startuml
+!pragma layout smetana
+title HEALO — Notification, Reminder & Audit Classes
+left to right direction
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam defaultFontName Arial
+skinparam classAttributeIconSize 0
+skinparam ArrowColor #334155
+hide empty members
+
+package "Domain Models" #EEF2FF {
+  class User <<Eloquent>>
+  class UserNotification <<Eloquent>> {
+    +id: bigint
+    +user_id: bigint
+    +type: NotificationType
+    +title: string
+    +body: string
+    +data: array?
+    +action_url: string?
+    +deduplication_key: string
+    +reference_date: date?
+    +available_at: datetime?
+    +delivered_at: datetime?
+    +read_at: datetime?
+    +scopeUnread(query): Builder
+  }
+  class NotificationPreference <<Eloquent>> {
+    +id: bigint
+    +user_id: bigint
+    +notifications_enabled: bool
+    +health_plan_enabled: bool
+    +meal_reminder_enabled: bool
+    +journal_reminder_enabled: bool
+    +health_goal_enabled: bool
+    +health_insight_enabled: bool
+    +wellness_enabled: bool
+    +system_enabled: bool
+    +quiet_hours_start: time?
+    +quiet_hours_end: time?
+    +reminder_time: time
+  }
+  class AuditLog <<Eloquent>> {
+    +id: bigint
+    +actor_id: bigint?
+    +action: string
+    +subject_type: string?
+    +subject_id: bigint?
+    +safe_metadata: array?
+    +ip_hash: string?
+    +user_agent: string?
+    +created_at: datetime
+    +actor(): BelongsTo
+    +subject(): MorphTo
+  }
+}
+
+package "Application Services" #E8F4FF {
+  class NotificationPreferenceService {
+    +forUser(user): NotificationPreference
+    +update(user, data): NotificationPreference
+  }
+  class NotificationService {
+    +create(...): UserNotification?
+    +markAsRead(user, notification): UserNotification
+    +markAllAsRead(user): int
+    +delete(user, notification): void
+    +unreadCount(user): int
+    +latest(user, limit = 5): Collection
+    +deliverDue(limit = 500): int
+    +paginate(user, filter, perPage): Paginator
+  }
+  class ReminderService {
+    +generateFor(user, date): Collection
+    +queueForAll(date): int
+    +queueDue(now): int
+  }
+  class AuditLogService {
+    +record(actor, action, subject, metadata, request): AuditLog
+  }
+  class HealthGoalService
+}
+
+package "Async & Realtime" #F3E8FF {
+  class SendWellnessReminderJob <<ShouldQueue>> {
+    +userId: int
+    +referenceDate: string
+    +handle(reminders): void
+  }
+  class NotificationCreated <<ShouldBroadcast>> {
+    +notification: UserNotification
+    +broadcastOn(): array
+    +broadcastAs(): string
+    +broadcastQueue(): string
+    +broadcastWith(): array
+  }
+  class SendRemindersCommand <<Command>> {
+    +handle(reminders): int
+  }
+  class DeliverNotificationsCommand <<Command>> {
+    +handle(notifications): int
+  }
+}
+
+User "1" -- "0..*" UserNotification
+User "1" -- "0..1" NotificationPreference
+User "0..1" -- "0..*" AuditLog : actor
+
+NotificationService --> NotificationPreferenceService
+NotificationService ..> UserNotification : stores first
+NotificationService ..> NotificationCreated : broadcasts when deliverable
+ReminderService --> NotificationService
+ReminderService --> HealthGoalService
+ReminderService ..> SendWellnessReminderJob : queues
+SendWellnessReminderJob --> ReminderService : handle
+SendWellnessReminderJob ..> User : loads owner
+SendRemindersCommand --> ReminderService
+DeliverNotificationsCommand --> NotificationService
+AuditLogService ..> AuditLog : creates
+
+note right of UserNotification
+  Unique (user_id, deduplication_key)
+  mencegah reminder duplikat.
+end note
+
+note right of NotificationCreated
+  Record durable dibuat lebih dahulu.
+  Broadcast Reverb adalah efek tambahan;
+  notifikasi tetap tersedia saat realtime offline.
+end note
+
+note right of AuditLogService
+  Metadata dibatasi pada konteks operasional
+  bersensitivitas rendah; konten kesehatan
+  tidak boleh diteruskan sebagai metadata.
+end note
+@enduml
+

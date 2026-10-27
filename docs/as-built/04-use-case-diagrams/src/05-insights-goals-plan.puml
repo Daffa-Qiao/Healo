@@ -30,14 +30,14 @@ rectangle "HEALO" #FFFFFF {
   }
 }
 
-USER --> INS01
-USER --> INS02
-USER --> INS03
-USER --> GOAL01
-USER --> GOAL02
-USER --> PLAN01
-USER --> PLAN02
-USER --> PLAN03
+USER -- INS01
+USER -- INS02
+USER -- INS03
+USER -- GOAL01
+USER -- GOAL02
+USER -- PLAN01
+USER -- PLAN02
+USER -- PLAN03
 
 INS03 ..> INS01 : <<extend>>\n[personalized insight diminta]
 GOAL02 ..> GOAL01 : <<extend>>\n[pantau progress]

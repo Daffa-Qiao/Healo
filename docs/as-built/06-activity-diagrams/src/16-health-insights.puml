@@ -1,0 +1,47 @@
+@startuml
+title AD-16 — Health Insights, Tren, dan Personalized AI Insight
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam activityBorderColor #0F766E
+skinparam activityBackgroundColor #F0FDFA
+skinparam ArrowColor #334155
+
+|#E8F4FF|User|
+start
+:Buka Health Insights;
+:Pilih periode 7, 30, atau 90 hari;
+
+|#ECFDF5|HEALO Application|
+:Normalisasi periode;
+
+|#FFF7E6|Database|
+:Ambil BMI, meal, jurnal, profile,\ndan goal owner-scoped;
+
+|#ECFDF5|HEALO Application|
+:Hitung overview, tren, weekly summary,\ndan rule-based insights;
+if (Data cukup?) then (Tidak)
+  :Tampilkan empty / limited-data state;
+else (Ya)
+  :Tampilkan grafik dan ringkasan;
+endif
+
+|#E8F4FF|User|
+if (Minta personalized AI insight?) then (Ya)
+  |#ECFDF5|HEALO Application|
+  :Bentuk aggregate context minimal;
+  |#F3E8FF|Health AI Provider|
+  :Hasilkan insight terstruktur;
+  |#ECFDF5|HEALO Application|
+  :Parse dan jalankan medical safety;
+  if (Provider / output tidak valid?) then (Ya)
+    :Gunakan rule-based fallback;
+  else (Tidak)
+    :Gabungkan insight aman;
+  endif
+  :Tampilkan summary, insight,\nrecommendation, dan disclaimer;
+else (Tidak)
+endif
+stop
+@enduml
+

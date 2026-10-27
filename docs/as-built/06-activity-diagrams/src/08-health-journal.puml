@@ -1,0 +1,69 @@
+@startuml
+title AD-08 — Jurnal Kesehatan, Entri, dan Tren
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam activityBorderColor #059669
+skinparam activityBackgroundColor #ECFDF5
+skinparam ArrowColor #334155
+
+|#E8F4FF|User|
+start
+:Buka jurnal kesehatan;
+
+|#FFF7E6|Database|
+:Ambil jurnal owner-scoped;
+
+|#ECFDF5|HEALO Application|
+:Terapkan search, filter, periode, pagination;
+:Hitung overview, highlights, dan tren;
+
+|#E8F4FF|User|
+:Pilih aksi jurnal;
+
+|#ECFDF5|HEALO Application|
+if (Buat / ubah jurnal?) then (Ya)
+  |#E8F4FF|User|
+  :Isi judul, tanggal, mood,\ndan metrik harian;
+  |#ECFDF5|HEALO Application|
+  :Validasi input dan ownership;
+  if (Valid?) then (Tidak)
+    :Tampilkan error;
+    stop
+  else (Ya)
+    |#FFF7E6|Database|
+    :Simpan jurnal dan sinkronkan entries;
+  endif
+elseif (Kelola entry?) then (Ya)
+  |#E8F4FF|User|
+  :Isi tipe, konten, dan urutan;
+  |#ECFDF5|HEALO Application|
+  :Validasi parent ownership dan input;
+  if (Valid?) then (Ya)
+    :Enkripsi konten;
+    |#FFF7E6|Database|
+    :Simpan / ubah / hapus entry;
+  else (Tidak)
+    |#ECFDF5|HEALO Application|
+    :Tolak akses atau tampilkan error;
+  endif
+elseif (Hapus jurnal?) then (Ya)
+  |#ECFDF5|HEALO Application|
+  :Periksa ownership;
+  if (Milik User?) then (Ya)
+    |#FFF7E6|Database|
+    :Soft-delete jurnal dan simpan audit;
+  else (Tidak)
+    |#ECFDF5|HEALO Application|
+    :Tolak akses;
+  endif
+else (Lihat saja)
+endif
+
+|#ECFDF5|HEALO Application|
+:Bangun ulang daftar / tren terbaru;
+|#E8F4FF|User|
+:Lihat hasil;
+stop
+@enduml
+

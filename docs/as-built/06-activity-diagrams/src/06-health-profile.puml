@@ -1,0 +1,44 @@
+@startuml
+title AD-06 — Mengelola Profil Kesehatan
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam activityBorderColor #059669
+skinparam activityBackgroundColor #ECFDF5
+skinparam ArrowColor #334155
+
+|#E8F4FF|User|
+start
+:Buka profil kesehatan;
+
+|#FFF7E6|Database|
+:Ambil HealthProfile milik User;
+
+|#ECFDF5|HEALO Application|
+if (Profil tersedia?) then (Ya)
+  :Tampilkan data yang dapat diedit;
+else (Tidak)
+  :Tampilkan formulir kosong dan consent;
+endif
+
+|#E8F4FF|User|
+:Isi tinggi, berat, tanggal lahir,\ngender, aktivitas, goal, kondisi, alergi;
+:Berikan consent bila diperlukan;
+
+|#ECFDF5|HEALO Application|
+:Validasi range, enum, dan consent;
+if (Input valid?) then (Tidak)
+  :Tampilkan validation errors;
+  stop
+else (Ya)
+  :Enkripsi kondisi kesehatan dan alergi;
+endif
+
+|#FFF7E6|Database|
+:Upsert satu HealthProfile per User;
+
+|#ECFDF5|HEALO Application|
+:Tampilkan profil tersimpan;
+stop
+@enduml
+

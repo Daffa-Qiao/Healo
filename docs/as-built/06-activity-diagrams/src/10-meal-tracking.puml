@@ -1,0 +1,65 @@
+@startuml
+title AD-10 — Catatan Makan dan Item Nutrisi
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam activityBorderColor #D97706
+skinparam activityBackgroundColor #FFFBEB
+skinparam ArrowColor #334155
+
+|#E8F4FF|User|
+start
+:Buka catatan makan;
+:Pilih buat, ubah, lihat, atau hapus meal;
+
+|#ECFDF5|HEALO Application|
+if (Buat / ubah?) then (Ya)
+  |#E8F4FF|User|
+  :Isi tanggal, tipe makan, dan catatan;
+  |#ECFDF5|HEALO Application|
+  :Validasi input dan ownership;
+  if (Valid?) then (Tidak)
+    :Tampilkan error;
+    stop
+  else (Ya)
+    |#FFF7E6|Database|
+    :Simpan Meal;
+  endif
+elseif (Hapus?) then (Ya)
+  |#ECFDF5|HEALO Application|
+  :Periksa ownership;
+  if (Milik User?) then (Tidak)
+    :Tolak akses;
+    stop
+  else (Ya)
+    |#FFF7E6|Database|
+    :Soft-delete Meal dan cascade item;
+    :Simpan audit;
+  endif
+else (Lihat)
+endif
+
+|#E8F4FF|User|
+if (Kelola item makanan?) then (Ya)
+  :Isi nama, porsi, satuan, kalori,\nprotein, karbohidrat, dan lemak;
+  |#ECFDF5|HEALO Application|
+  :Validasi item dan parent ownership;
+  if (Valid?) then (Ya)
+    |#FFF7E6|Database|
+    :Simpan / ubah / hapus MealItem;
+  else (Tidak)
+    |#ECFDF5|HEALO Application|
+    :Tampilkan error;
+    stop
+  endif
+else (Tidak)
+endif
+
+|#ECFDF5|HEALO Application|
+:Hitung ulang total_calories;
+:Refresh NutritionDailySummary;
+|#E8F4FF|User|
+:Lihat meal dan label nutrisi terbaru;
+stop
+@enduml
+

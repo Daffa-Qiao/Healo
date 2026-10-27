@@ -1,0 +1,50 @@
+@startuml
+title AD-14 — Pemeriksaan Gejala dengan Emergency Gate
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam activityBorderColor #7C3AED
+skinparam activityBackgroundColor #F5F3FF
+skinparam ArrowColor #334155
+
+|#E8F4FF|User|
+start
+:Isi deskripsi gejala;
+:Pilih simpan ke history atau ephemeral;
+
+|#ECFDF5|HEALO Application|
+:Bersihkan input, validasi, dan cek throttle;
+if (Input valid dan limit tersedia?) then (Tidak)
+  :Tampilkan error;
+  stop
+else (Ya)
+endif
+:Jalankan emergency detection lokal;
+if (Red flag fisik / self-harm ditemukan?) then (Ya)
+  :Bentuk emergency assessment lokal;
+else (Tidak)
+  :Bangun minimized health context;
+  |#F3E8FF|Health AI Provider|
+  :Analisis gejala dengan schema terstruktur;
+  |#ECFDF5|HEALO Application|
+  :Parse urgency, symptoms, differential,\ncategory, specialty, dan recommendation;
+  if (Provider / schema gagal?) then (Ya)
+    :Gunakan validated fallback urgency=soon;
+  else (Tidak)
+    :Jalankan referral gate dan medical safety;
+  endif
+endif
+
+if (User memilih simpan?) then (Ya)
+  |#FFF7E6|Database|
+  :Simpan SymptomAssessment terenkripsi;
+else (Tidak)
+  |#ECFDF5|HEALO Application|
+  :Pertahankan hasil ephemeral;
+endif
+
+|#ECFDF5|HEALO Application|
+:Tampilkan summary, gejala, differential,\nred flag, urgency, referral,\nrecommendation, confidence, dan disclaimer;
+stop
+@enduml
+

@@ -1,0 +1,45 @@
+@startuml
+title AD-12 — Pencarian dan Rekomendasi Menu Sehat
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam activityBorderColor #10B981
+skinparam activityBackgroundColor #ECFDF5
+skinparam ArrowColor #334155
+
+|#E8F4FF|User|
+start
+:Buka menu sehat;
+:Masukkan kata kunci dan filter\nmeal type / diet preference;
+
+|#ECFDF5|HEALO Application|
+:Validasi filter dan pagination;
+
+|#FFF7E6|Database|
+:Query HealthyMenu active;
+:Terapkan search dan filter;
+
+|#ECFDF5|HEALO Application|
+if (User meminta rekomendasi personal?) then (Ya)
+  |#FFF7E6|Database|
+  :Ambil NutritionProfile milik User;
+  |#ECFDF5|HEALO Application|
+  if (Profil tersedia?) then (Ya)
+    :Prioritaskan diet preference\ndan target kalori;
+  else (Tidak)
+    :Gunakan menu aktif umum;
+  endif
+else (Tidak)
+endif
+
+if (Menu ditemukan?) then (Tidak)
+  :Tampilkan empty state;
+else (Ya)
+  :Tampilkan nama, kalori, protein,\nkarbohidrat, lemak, bahan,\npersiapan, sumber, dan atribusi;
+endif
+
+|#E8F4FF|User|
+:Lihat detail menu;
+stop
+@enduml
+

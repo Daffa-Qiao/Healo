@@ -1,0 +1,189 @@
+@startuml
+!pragma layout smetana
+title HEALO — Nutrition, Meal, Food Analysis & Healthy Menu Classes
+left to right direction
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam defaultFontName Arial
+skinparam classAttributeIconSize 0
+skinparam ArrowColor #334155
+hide empty members
+
+package "Domain Models" #FFF7E6 {
+  class User <<Eloquent>>
+  class HealthProfile <<Eloquent>>
+  class NutritionProfile <<Eloquent>> {
+    +id: bigint
+    +user_id: bigint
+    +daily_calorie_target: int
+    +activity_level: ActivityLevel
+    +goal: NutritionGoal
+    +diet_preference: DietPreference
+    +food_preferences: array? [enc]
+    +target_source: string
+    +calculated_at: datetime?
+  }
+  class Meal <<Eloquent>> {
+    +id: bigint
+    +user_id: bigint
+    +meal_date: date
+    +meal_type: MealType
+    +notes: string? [enc]
+    +total_calories: decimal [derived]
+    +deleted_at: datetime?
+    +items(): HasMany
+  }
+  class MealItem <<Eloquent>> {
+    +id: bigint
+    +meal_id: bigint
+    +food_name: string
+    +serving_size: decimal
+    +serving_unit: string
+    +calories: decimal
+    +protein_g: decimal
+    +carbohydrates_g: decimal
+    +fat_g: decimal
+    +source: NutritionSource
+    +confidence: decimal?
+  }
+  class NutritionDailySummary <<Eloquent>> {
+    +id: bigint
+    +user_id: bigint
+    +summary_date: date
+    +calorie_target: int [derived]
+    +calories_consumed: decimal [derived]
+    +calories_remaining: decimal [derived]
+    +meals_logged: int [derived]
+  }
+  class FoodAnalysis <<Eloquent>> {
+    +id: bigint
+    +user_id: bigint
+    +image_path: string? [enc]
+    +status: FoodAnalysisStatus
+    +result: array? [enc]
+    +confidence: decimal?
+    +provider: string?
+    +failure_code: string? [enc]
+    +analyzed_at: datetime?
+    +confirmed_at: datetime?
+    +expires_at: datetime?
+  }
+  class HealthyMenu <<Eloquent>> {
+    +id: bigint
+    +name: string
+    +slug: string
+    +meal_type: MealType
+    +diet_preference: DietPreference
+    +calories: decimal
+    +protein_g: decimal
+    +carbohydrates_g: decimal
+    +fat_g: decimal
+    +ingredients: array
+    +active: bool
+  }
+}
+
+package "Application Services" #E8F4FF {
+  class CalorieTargetService {
+    +calculate(...): CalorieTargetResult
+  }
+  class NutritionProfileService {
+    +update(user, data): NutritionProfile
+  }
+  class MealService {
+    +create(user, data): Meal
+    +createWithItems(user, mealData, items): Meal
+    +update(meal, data): Meal
+    +delete(meal): void
+    +recalculate(meal): Meal
+  }
+  class MealItemService {
+    +create(meal, data): MealItem
+    +update(item, data): MealItem
+    +delete(item): void
+  }
+  class NutritionSummaryService {
+    +refresh(user, date): NutritionDailySummary
+    +weekly(user, ending): Collection
+    +weeklyStats(days): array
+  }
+  class FoodAnalysisService {
+    +analyze(user, image): FoodAnalysis
+    +confirm(analysis, data): Meal
+    +cancel(analysis): void
+    +deleteExpiredImages(): int
+  }
+  class HealthyMenuService {
+    +search(filters): Paginator
+    +recommendations(user, mealType): Collection
+  }
+}
+
+package "Provider & Result Objects" #F3E8FF {
+  interface FoodAnalysisProviderInterface {
+    +analyze(imagePath, originalName): FoodAnalysisResult
+  }
+  class GroqFoodAnalysisProvider
+  class LocalDemoFoodAnalysisProvider
+  class FoodAnalysisResult <<readonly>> {
+    +foods: FoodAnalysisItem[]
+    +confidence: float
+    +provider: string
+    +totalCalories(): float
+    +toArray(): array
+  }
+  class FoodAnalysisItem <<readonly>> {
+    +name: string
+    +servingSize: float
+    +servingUnit: string
+    +calories: float
+    +proteinG: float
+    +carbohydratesG: float
+    +fatG: float
+  }
+  class CalorieTargetResult <<readonly>>
+}
+
+User "1" -- "0..1" NutritionProfile
+User "1" -- "0..*" Meal
+Meal "1" *-- "0..*" MealItem
+User "1" -- "0..*" NutritionDailySummary
+User "1" -- "0..*" FoodAnalysis
+
+NutritionProfileService --> CalorieTargetService
+NutritionProfileService --> NutritionSummaryService
+NutritionProfileService ..> HealthProfile : calculation input
+NutritionProfileService ..> NutritionProfile : writes
+CalorieTargetService ..> CalorieTargetResult : returns
+MealService --> NutritionSummaryService
+MealService ..> Meal : writes
+MealItemService --> MealService
+MealItemService ..> MealItem : writes
+NutritionSummaryService ..> Meal : aggregates
+NutritionSummaryService ..> NutritionProfile : target source
+NutritionSummaryService ..> NutritionDailySummary : writes
+FoodAnalysisService --> FoodAnalysisProviderInterface
+FoodAnalysisService --> MealService : confirm
+FoodAnalysisService ..> FoodAnalysis : lifecycle
+HealthyMenuService ..> HealthyMenu : queries
+HealthyMenuService ..> NutritionProfile : personalizes
+
+GroqFoodAnalysisProvider ..|> FoodAnalysisProviderInterface
+LocalDemoFoodAnalysisProvider ..|> FoodAnalysisProviderInterface
+FoodAnalysisProviderInterface ..> FoodAnalysisResult : returns
+FoodAnalysisResult "1" *-- "1..*" FoodAnalysisItem
+
+note right of FoodAnalysisService
+  Tidak ada FK FoodAnalysis → Meal.
+  Meal dan MealItem baru dibuat setelah
+  label nutrisi ditinjau, dikoreksi,
+  dan dikonfirmasi oleh User.
+end note
+
+legend bottom
+  [enc] = encrypted cast; [derived] = dihitung/disinkronkan service.
+  HealthyMenu adalah katalog global, bukan child User.
+endlegend
+@enduml
+

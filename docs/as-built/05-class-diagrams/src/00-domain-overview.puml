@@ -1,0 +1,94 @@
+@startuml
+!pragma layout smetana
+title HEALO — Domain Model Overview (As-Built)
+left to right direction
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam defaultFontName Arial
+skinparam classAttributeIconSize 0
+skinparam classBorderColor #2563EB
+skinparam classBackgroundColor #EFF6FF
+skinparam ArrowColor #334155
+hide empty members
+
+package "Identity" #E8F4FF {
+  class User
+}
+
+package "Personal Health Records" #ECFDF5 {
+  class HealthProfile
+  class BmiRecord
+  class HealthJournal
+  class HealthJournalEntry
+}
+
+package "Nutrition & Food" #FFF7E6 {
+  class NutritionProfile
+  class Meal
+  class MealItem
+  class NutritionDailySummary
+  class FoodAnalysis
+  class HealthyMenu
+}
+
+package "Health AI" #F3E8FF {
+  class HealthConversation
+  class HealthMessage
+  class SymptomAssessment
+}
+
+package "Goals & Daily Plan" #E6FFFB {
+  class HealthGoal
+  class HealthPlan
+  class HealthPlanTask
+}
+
+package "Operations" #EEF2FF {
+  class UserNotification
+  class NotificationPreference
+  class AuditLog
+}
+
+User "1" -- "0..1" HealthProfile : owns
+User "1" -- "0..*" BmiRecord : records
+User "1" -- "0..*" HealthJournal : owns
+HealthJournal "1" *-- "0..*" HealthJournalEntry : entries
+
+User "1" -- "0..1" NutritionProfile : configures
+User "1" -- "0..*" Meal : logs
+Meal "1" *-- "0..*" MealItem : items
+User "1" -- "0..*" NutritionDailySummary : summaries
+User "1" -- "0..*" FoodAnalysis : drafts
+
+User "1" -- "0..*" HealthConversation : owns
+HealthConversation "1" *-- "0..*" HealthMessage : messages
+User "1" -- "0..*" SymptomAssessment : owns
+HealthConversation "0..1" -- "0..*" SymptomAssessment : context
+HealthJournal "0..1" -- "0..*" SymptomAssessment : saved into
+
+User "1" -- "0..*" HealthGoal : goals
+User "1" -- "0..*" HealthPlan : plans
+HealthPlan "1" *-- "0..*" HealthPlanTask : tasks
+
+User "1" -- "0..*" UserNotification : receives
+User "1" -- "0..1" NotificationPreference : configures
+User "0..1" -- "0..*" AuditLog : actor
+
+note right of HealthyMenu
+  Katalog global aktif.
+  Tidak memiliki user_id.
+end note
+
+note right of AuditLog
+  subject() adalah MorphTo.
+  Target polymorphic tidak dipaksakan
+  menjadi FK ke satu model tertentu.
+end note
+
+legend bottom
+  Multiplicity berasal dari foreign key, nullable, dan unique constraint migration.
+  Admin bukan subclass User; Admin adalah nilai UserRole pada model User.
+endlegend
+@enduml
+

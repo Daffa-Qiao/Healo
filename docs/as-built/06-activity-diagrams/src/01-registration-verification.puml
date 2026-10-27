@@ -1,0 +1,56 @@
+@startuml
+title AD-01 — Registrasi dan Verifikasi Email
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam activityBorderColor #0284C7
+skinparam activityBackgroundColor #F0F9FF
+skinparam ArrowColor #334155
+
+|#E8F4FF|User|
+start
+:Buka formulir registrasi;
+:Isi nama, email, password,\ndan konfirmasi password;
+
+|#ECFDF5|HEALO Application|
+:Validasi format, password,\ndan keunikan email;
+if (Data valid?) then (Tidak)
+  :Kembalikan validation errors;
+  |#E8F4FF|User|
+  :Perbaiki data;
+  stop
+else (Ya)
+  :Hash password;
+endif
+
+|#FFF7E6|Database|
+:Simpan User role=user dan locale=id;
+:Simpan audit auth.registered;
+
+|#ECFDF5|HEALO Application|
+:Buat session dan dispatch\nemail verification notification;
+
+|#F3E8FF|Mail Transport|
+if (Pengiriman tersedia?) then (Ya)
+  :Kirim tautan verifikasi bertanda tangan;
+else (Tidak)
+  :Pengiriman gagal;
+endif
+
+|#E8F4FF|User|
+:Buka tautan verifikasi\natau minta kirim ulang;
+
+|#ECFDF5|HEALO Application|
+:Validasi signature, expiry,\ndan identitas User;
+if (Tautan valid?) then (Tidak)
+  :Tampilkan error / izinkan resend;
+  stop
+else (Ya)
+  |#FFF7E6|Database|
+  :Isi email_verified_at;
+  |#ECFDF5|HEALO Application|
+  :Arahkan ke dashboard;
+  stop
+endif
+@enduml
+

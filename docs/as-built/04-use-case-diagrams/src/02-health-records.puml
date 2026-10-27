@@ -29,13 +29,13 @@ rectangle "HEALO" #FFFFFF {
   }
 }
 
-USER --> DASH01
-USER --> HPR01
-USER --> BMI01
-USER --> BMI02
-USER --> JRN01
-USER --> JRN02
-USER --> JRN03
+USER -- DASH01
+USER -- HPR01
+USER -- BMI01
+USER -- BMI02
+USER -- JRN01
+USER -- JRN02
+USER -- JRN03
 
 JRN02 ..> JRN01 : <<extend>>\n[kelola detail jurnal]
 

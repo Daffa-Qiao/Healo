@@ -1,0 +1,53 @@
+@startuml
+title AD-02 — Login dan Logout
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam activityBorderColor #0284C7
+skinparam activityBackgroundColor #F0F9FF
+skinparam ArrowColor #334155
+
+|#E8F4FF|User|
+start
+:Masukkan email dan password;
+
+|#ECFDF5|HEALO Application|
+:Validasi request dan throttle login;
+if (Kredensial benar?) then (Tidak)
+  :Tambah hit throttle;
+  :Tampilkan pesan autentikasi gagal;
+  stop
+else (Ya)
+  :Clear throttle;
+  :Regenerasi session atau buat token API;
+endif
+
+|#FFF7E6|Database|
+:Simpan audit auth.login;
+
+|#ECFDF5|HEALO Application|
+if (Channel web dan email belum verified?) then (Ya)
+  :Arahkan ke halaman verifikasi;
+  stop
+else (Tidak)
+endif
+if (Role Admin?) then (Ya)
+  :Arahkan ke dashboard Admin;
+else (Tidak)
+  :Arahkan ke dashboard User;
+endif
+
+|#E8F4FF|User|
+:Pilih logout;
+
+|#ECFDF5|HEALO Application|
+:Invalidasi session + regenerasi CSRF\natau cabut token aktif;
+
+|#FFF7E6|Database|
+:Simpan audit auth.logout;
+
+|#ECFDF5|HEALO Application|
+:Arahkan ke halaman publik;
+stop
+@enduml
+

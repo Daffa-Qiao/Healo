@@ -1,0 +1,167 @@
+@startuml
+!pragma layout smetana
+title HEALO — Insights, Health Goals & Daily Plan Classes
+left to right direction
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam defaultFontName Arial
+skinparam classAttributeIconSize 0
+skinparam ArrowColor #334155
+hide empty members
+
+package "Domain Models" #E6FFFB {
+  class User <<Eloquent>>
+  class HealthGoal <<Eloquent>> {
+    +id: bigint
+    +user_id: bigint
+    +type: HealthGoalType
+    +target_value: decimal
+    +current_value: decimal? [derived]
+    +unit: string
+    +start_date: date
+    +target_date: date?
+    +status: HealthGoalStatus
+    +metadata: array? [enc]
+  }
+  class HealthPlan <<Eloquent>> {
+    +id: bigint
+    +user_id: bigint
+    +plan_date: date
+    +status: HealthPlanStatus [derived]
+    +progress_percentage: int [derived]
+    +generated_at: datetime
+    +completed_at: datetime?
+    +tasks(): HasMany
+  }
+  class HealthPlanTask <<Eloquent>> {
+    +id: bigint
+    +health_plan_id: bigint
+    +type: HealthPlanTaskType
+    +title: string
+    +description: string?
+    +status: HealthPlanTaskStatus
+    +priority: int
+    +source: HealthPlanTaskSource
+    +source_reference: string
+    +completion_mode: HealthPlanTaskCompletionMode
+    +completed_at: datetime?
+    +metadata: array? [enc]
+  }
+  class BmiRecord <<source>>
+  class Meal <<source>>
+  class HealthJournal <<source>>
+  class NutritionProfile <<source>>
+}
+
+package "Insights Services" #ECFDF5 {
+  class DashboardHealthService {
+    +forUser(user): array
+  }
+  class HealthInsightsService {
+    +overview(user, period = 7): array
+    +trends(user, period = 7): array
+    +weekly(user): array
+    +personalized(user, period = 7): HealthInsightsAIResult
+    +ruleInsights(overview): array
+  }
+  class HealthInsightsContextService {
+    +fromOverview(overview): array
+  }
+  class HealthInsightsAIParser {
+    +parse(payload, provider, model): HealthInsightsAIResult
+  }
+  class HealthGoalService {
+    +create(user, data): HealthGoal
+    +update(goal, data): HealthGoal
+    +delete(goal): void
+    +progress(goal): HealthGoalProgress
+    +currentValueFor(user, type, startDate): float?
+  }
+}
+
+package "Health Plan Services" #E8F4FF {
+  class HealthPlanService {
+    +generate(user, date): HealthPlan
+    +today(user, generate = true): HealthPlan?
+    +complete(task): HealthPlan
+    +uncomplete(task): HealthPlan
+    +metrics(plan): array
+  }
+  class HealthPlanGenerator {
+    +tasks(user, date): array
+  }
+  class HealthPlanProgressService {
+    +synchronize(plan): HealthPlan
+    +recalculate(plan): HealthPlan
+  }
+  class HealthPlanPersonalizationService {
+    +forPlan(plan): HealthPlanPersonalization
+  }
+}
+
+package "Cross-Domain Dependencies" #F3E8FF {
+  class NutritionSummaryService
+  interface HealthAIProviderInterface
+  class MedicalSafetyService
+}
+
+package "Result Objects" #FFF7E6 {
+  class HealthGoalProgress <<readonly>> {
+    +currentValue: float?
+    +targetValue: float
+    +remainingValue: float?
+    +percentage: float
+    +status: HealthGoalStatus
+    +unit: string
+  }
+  class HealthInsightsAIResult <<readonly>>
+  class HealthPlanPersonalization
+}
+
+User "1" -- "0..*" HealthGoal
+User "1" -- "0..*" HealthPlan
+HealthPlan "1" *-- "0..*" HealthPlanTask
+
+HealthGoalService ..> HealthGoal : writes/recalculates
+HealthGoalService ..> BmiRecord : progress source
+HealthGoalService ..> Meal : progress source
+HealthGoalService ..> HealthJournal : progress source
+HealthGoalService ..> HealthGoalProgress : returns
+
+HealthInsightsService --> HealthGoalService
+HealthInsightsService --> HealthInsightsContextService
+HealthInsightsService --> HealthInsightsAIParser
+HealthInsightsService --> HealthAIProviderInterface
+HealthInsightsService --> MedicalSafetyService
+HealthInsightsService ..> BmiRecord
+HealthInsightsService ..> Meal
+HealthInsightsService ..> HealthJournal
+
+DashboardHealthService --> NutritionSummaryService
+DashboardHealthService --> HealthInsightsService
+DashboardHealthService --> HealthGoalService
+DashboardHealthService --> HealthPlanService
+
+HealthPlanService --> HealthPlanGenerator
+HealthPlanService --> HealthPlanProgressService
+HealthPlanService ..> HealthPlan : writes
+HealthPlanService ..> HealthPlanTask : changes status
+HealthPlanGenerator ..> NutritionProfile
+HealthPlanGenerator ..> HealthGoal
+HealthPlanGenerator ..> Meal
+HealthPlanGenerator ..> HealthJournal
+HealthPlanProgressService ..> HealthPlanTask : synchronizes
+
+HealthPlanPersonalizationService --> HealthAIProviderInterface
+HealthPlanPersonalizationService --> HealthInsightsService
+HealthPlanPersonalizationService --> HealthInsightsContextService
+HealthPlanPersonalizationService --> MedicalSafetyService
+HealthPlanPersonalizationService ..> HealthPlanPersonalization : returns
+
+legend bottom
+  [enc] = encrypted cast; [derived] = dihitung service dari source record.
+  Unique (user_id, plan_date) menjamin maksimal satu plan per User per tanggal.
+endlegend
+@enduml
+

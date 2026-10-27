@@ -1,0 +1,38 @@
+@startuml
+title AD-05 — Dashboard Kesehatan User
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam activityBorderColor #059669
+skinparam activityBackgroundColor #ECFDF5
+skinparam ArrowColor #334155
+
+|#E8F4FF|User|
+start
+:Buka dashboard;
+
+|#ECFDF5|HEALO Application|
+:Validasi login dan email verified;
+if (Akses valid?) then (Tidak)
+  :Redirect ke login / verifikasi;
+  stop
+else (Ya)
+endif
+
+|#FFF7E6|Database|
+:Ambil health profile, BMI terbaru,\nmeal, jurnal, goal, plan,\ndan notifikasi milik User;
+
+|#ECFDF5|HEALO Application|
+:Refresh ringkasan nutrisi hari ini;
+:Hitung weekly comparison,\nprogress goal, dan status plan;
+if (Data belum tersedia?) then (Ya)
+  :Bangun empty state dan CTA\nuntuk melengkapi data;
+else (Tidak)
+  :Bangun kartu dan ringkasan owner-scoped;
+endif
+
+|#E8F4FF|User|
+:Lihat dashboard dan pilih fitur lanjutan;
+stop
+@enduml
+

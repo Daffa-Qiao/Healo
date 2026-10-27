@@ -1,0 +1,62 @@
+@startuml
+title AD-18 — Health Plan Harian, Task, dan Personalisasi
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam activityBorderColor #0F766E
+skinparam activityBackgroundColor #F0FDFA
+skinparam ArrowColor #334155
+
+|#E8F4FF|User|
+start
+:Buka / generate plan untuk tanggal;
+
+|#ECFDF5|HEALO Application|
+:Validasi tanggal;
+|#FFF7E6|Database|
+:Cari plan unik User + tanggal;
+if (Plan sudah ada?) then (Tidak)
+  :Buat HealthPlan active;
+else (Ya)
+endif
+:Ambil profile, nutrisi, meal, jurnal,\nBMI, goal, dan insight source;
+
+|#ECFDF5|HEALO Application|
+:Generate dan upsert task tanpa duplikasi;
+:Sinkronkan task completion_mode=data;
+:Hitung progress_percentage dan status;
+
+|#E8F4FF|User|
+if (Complete / uncomplete task?) then (Ya)
+  :Pilih task;
+  |#ECFDF5|HEALO Application|
+  :Periksa ownership dan completion mode;
+  if (Task manual?) then (Ya)
+    |#FFF7E6|Database|
+    :Ubah status dan completed_at;
+    |#ECFDF5|HEALO Application|
+    :Hitung ulang progress plan;
+  else (Tidak)
+    :Tolak perubahan manual\ndan sinkronkan dari source data;
+  endif
+else (Tidak)
+endif
+
+|#E8F4FF|User|
+if (Lihat personalisasi?) then (Ya)
+  |#ECFDF5|HEALO Application|
+  :Bangun aggregate context minimal;
+  |#F3E8FF|Health AI Provider|
+  :Hasilkan wording plan terstruktur;
+  |#ECFDF5|HEALO Application|
+  if (Output aman dan valid?) then (Tidak)
+    :Gunakan personalisasi lokal fallback;
+  else (Ya)
+    :Gunakan wording tervalidasi;
+  endif
+else (Tidak)
+endif
+:Tampilkan task, progress, status,\ndan personalisasi yang tersedia;
+stop
+@enduml
+

@@ -1,0 +1,168 @@
+@startuml
+!pragma layout smetana
+title HEALO — Healbot & Symptom Assessment Classes
+left to right direction
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam defaultFontName Arial
+skinparam classAttributeIconSize 0
+skinparam ArrowColor #334155
+hide empty members
+
+package "Domain Models" #F3E8FF {
+  class User <<Eloquent>>
+  class HealthJournal <<Eloquent>>
+  class HealthConversation <<Eloquent>> {
+    +id: bigint
+    +user_id: bigint
+    +title: string [enc]
+    +last_message_at: datetime?
+    +messages(): HasMany
+    +assessments(): HasMany
+  }
+  class HealthMessage <<Eloquent>> {
+    +id: bigint
+    +health_conversation_id: bigint
+    +role: HealthMessageRole
+    +message_type: HealthMessageType
+    +content: string [enc]
+    +metadata: array? [enc]
+  }
+  class SymptomAssessment <<Eloquent>> {
+    +id: bigint
+    +user_id: bigint
+    +health_conversation_id: bigint?
+    +health_journal_id: bigint?
+    +input: string [enc]
+    +summary: string [enc]
+    +urgency: SymptomUrgency
+    +red_flags: array [enc]
+    +symptoms: array [enc]
+    +possible_categories: array [enc]
+    +differential: array? [enc]
+    +recommended_specialty: string? [enc]
+    +referral_needed: bool
+    +recommendation: string [enc]
+    +confidence: AIConfidence
+    +provider: string
+    +model: string
+    +saved_to_journal_at: datetime?
+  }
+}
+
+package "Application Services" #E8F4FF {
+  class HealthAssistantService {
+    +createConversation(user, title): HealthConversation
+    +send(conversation, message): HealthMessage
+    +delete(conversation): void
+  }
+  class SymptomAssessmentService {
+    +assess(user, input, save, conversation): Result|Assessment
+  }
+  class AssessmentJournalService {
+    +save(assessment, title): HealthJournal
+  }
+  class HealthAIContextService {
+    +forAssistant(user, message): array
+    +forAssessment(user): array
+  }
+  class HealthAIResponseParser {
+    +assistant(payload): HealthAIResponse
+    +assessment(payload): SymptomAssessmentResult
+  }
+  class EmergencyDetectionService {
+    +detect(input): array
+  }
+  class MedicalSafetyService {
+    +guardedAssistantResponse(message, response): HealthAIResponse?
+    +emergencyAssessment(input, redFlags): SymptomAssessmentResult
+    +fallbackAssessment(): SymptomAssessmentResult
+    +guardedInsights(result): HealthInsightsAIResult
+    +guardedWellness(result): HealthPlanPersonalization
+  }
+  class SymptomAssessmentPrompt {
+    +instructions(locale): string
+  }
+  class HealthJournalService
+}
+
+package "Provider Contract" #FFF7E6 {
+  interface HealthAIProviderInterface {
+    +respond(request): array
+    +assess(request): array
+    +insights(request): array
+    +wellness(request): array
+  }
+  class GroqHealthAIProvider
+  class LocalDemoHealthAIProvider
+}
+
+package "Result Objects" #E6FFFB {
+  class HealthAIResponse <<readonly>> {
+    +content: string
+    +provider: string
+    +model: string
+    +confidence: AIConfidence
+    +metadata: array
+  }
+  class SymptomAssessmentResult <<readonly>> {
+    +summary: string
+    +symptoms: array
+    +possibleCategories: array
+    +redFlags: array
+    +urgency: SymptomUrgency
+    +recommendation: string
+    +confidence: AIConfidence
+    +provider: string
+    +model: string
+    +differential: array
+    +recommendedSpecialty: string?
+    +referralNeeded: bool
+  }
+  class HealthInsightsAIResult <<readonly>>
+  class HealthPlanPersonalization
+}
+
+User "1" -- "0..*" HealthConversation
+HealthConversation "1" *-- "0..*" HealthMessage
+User "1" -- "0..*" SymptomAssessment
+HealthConversation "0..1" -- "0..*" SymptomAssessment
+HealthJournal "0..1" -- "0..*" SymptomAssessment
+
+HealthAssistantService --> HealthAIProviderInterface
+HealthAssistantService --> HealthAIContextService
+HealthAssistantService --> HealthAIResponseParser
+HealthAssistantService --> MedicalSafetyService
+HealthAssistantService ..> HealthConversation : writes
+HealthAssistantService ..> HealthMessage : writes
+
+SymptomAssessmentService --> HealthAIProviderInterface
+SymptomAssessmentService --> HealthAIContextService
+SymptomAssessmentService --> HealthAIResponseParser
+SymptomAssessmentService --> EmergencyDetectionService
+SymptomAssessmentService --> MedicalSafetyService
+SymptomAssessmentService --> SymptomAssessmentPrompt
+SymptomAssessmentService ..> SymptomAssessment : optionally persists
+
+AssessmentJournalService --> HealthJournalService
+AssessmentJournalService ..> SymptomAssessment : updates link
+MedicalSafetyService --> EmergencyDetectionService
+HealthAIResponseParser ..> HealthAIResponse
+HealthAIResponseParser ..> SymptomAssessmentResult
+
+GroqHealthAIProvider ..|> HealthAIProviderInterface
+LocalDemoHealthAIProvider ..|> HealthAIProviderInterface
+
+note right of HealthAIProviderInterface
+  Binding runtime memilih Groq hanya jika
+  provider dikonfigurasi dan API key tersedia;
+  selain itu LocalDemo digunakan.
+end note
+
+legend bottom
+  Provider adalah adapter internal, bukan aktor bisnis.
+  [enc] menandai encrypted cast pada model.
+endlegend
+@enduml
+
